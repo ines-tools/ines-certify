@@ -2814,7 +2814,7 @@ add the relevant databases to the tool arguments in the tool properties window
 \end_layout
 
 \begin_layout Enumerate
-for the conversion script open the tool editor
+for the conversion script open the tool editor (add the tool specification or create the tool manually as below)
 \end_layout
 
 \begin_deeper
