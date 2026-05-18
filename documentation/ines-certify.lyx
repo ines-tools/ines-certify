@@ -702,6 +702,11 @@ Some constraints are redundant,
  the constraints that dictate that the flow needs to be positive is not necessary for both input and output when the output is equal to a portion of the input.
 \end_layout
 
+\begin_layout Plain Layout
+Some ines setups have defined a penalty for load shedding.
+ Load shedding is not actually being used in the setups so it is as if it is not implemented so it is ok to omit it in the equations.
+\end_layout
+
 \end_inset
 
 
@@ -1329,7 +1334,7 @@ reserves
 \begin_layout Standard
 The goal of this setup is to test the reserve requirements.
  To that end the setup starts from resolution = fixed and adds a reserve requirement to the demand.
- The reserves can be provided by the two units but there is also the possibility of load shedding (through a slack variable of the demand).
+ The reserves can be provided by the two units.
  A common way to include reserves is by working with a reserve node,
  dismissing the capacity restrictions of the lines.
  For the proof of concept,
@@ -1396,7 +1401,7 @@ minimise:
 \begin_inset Formula 
 \begin{align*}
 z= & \sum_{t}\{p^{other\_operational\_costs}_{cheap\_source,t}\cdot v^{flow}_{cheap\_source,t}+p^{other\_operational\_costs}_{expensive\_source,t}\cdot v^{flow}_{expensive\_source,t}\}\\
- & +\sum_{t}\{p^{penalty}_{demand}\cdot v^{slack}_{demand,t}+p^{procurement\_cost}_{cheap\_supply,t}\cdot v^{flow,reserve}_{cheap\_supply,t}+p^{procurement\_cost}_{expensive\_supply,t}\cdot v^{flow,reserve}_{expensive\_supply,t}\}
+ & +\sum_{t}\{p^{procurement\_cost}_{cheap\_supply,t}\cdot v^{flow,reserve}_{cheap\_supply,t}+p^{procurement\_cost}_{expensive\_supply,t}\cdot v^{flow,reserve}_{expensive\_supply,t}\}
 \end{align*}
 
 \end_inset
@@ -1418,7 +1423,7 @@ subject to:
 \begin_layout Standard
 \begin_inset Formula 
 \begin{align*}
-p^{reserve}_{demand,t}=< & v^{flow,reserve}_{cheap\_supply,t}+v^{flow,reserve}_{expensive\_supply,t}+v^{slack}_{demand,t}\\
+p^{reserve}_{demand,t}=< & v^{flow,reserve}_{cheap\_supply,t}+v^{flow,reserve}_{expensive\_supply,t}\\
 \\p^{flow\_profile}_{demand,t}= & v^{flow}_{cheap\_link,out,t}+v^{flow}_{expensive\_link,out,t}\\
 \\v^{flow}_{cheap\_link,out,t}= & p^{efficiency}_{cheap\_link}\cdot v^{flow}_{cheap\_link,in,t}\\
 v^{flow}_{expensive\_link,out,t}= & p^{efficiency}_{expensive\_link}\cdot v^{flow}_{expensive\_link,in,t}\\
@@ -1430,6 +1435,40 @@ v^{flow}_{cheap\_supply,t}= & p^{efficiency}_{cheap\_unit}\cdot v^{flow}_{cheap\
 \\v^{flow}_{expensive\_supply,t}+v^{flow,reserve}_{expensive\_supply,t} & \leq p^{capacity}_{expensive\_unit}\cdot p^{existing\_units}_{expensive\_unit}\\
 v^{flow}_{cheap\_supply,t}+v^{flow,reserve}_{expensive\_supply,t} & \leq p^{capacity}_{cheap\_unit}\cdot p^{existing\_units}_{cheap\_unit}
 \end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+slack in the reserve equation
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $z=\sum_{t}\{p^{penalty}_{demand}\cdot v^{slack}_{demand,t}+p^{procurement\_cost}_{cheap\_supply,t}\cdot v^{flow,reserve}_{cheap\_supply,t}+p^{procurement\_cost}_{expensive\_supply,t}\cdot v^{flow,reserve}_{expensive\_supply,t}\}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $p^{reserve}_{demand,t}=<v^{flow,reserve}_{cheap\_supply,t}+v^{flow,reserve}_{expensive\_supply,t}+v^{slack}_{demand,t}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $0\leq v^{slack}_{demand,t}$
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -1450,7 +1489,6 @@ bound to:
 \begin_layout Standard
 \begin_inset Formula 
 \begin{align*}
-0\leq & v^{slack}_{demand,t}\\
 0\leq & v^{flow,reserve}_{cheap\_supply,t} & \leq p^{max\_reserve}_{cheap\_unit}\cdot p^{existing\_units}_{cheap\_unit}\\
 0\leq & v^{flow,reserve}_{expensive\_supply,t} & \leq p^{max\_reserve}_{expensive\_unit}\cdot p^{existing\_units}_{expensive\_unit}\\
 \\0\leq & v^{flow}_{cheap\_link,in,t}\\
@@ -2291,7 +2329,7 @@ minimise:
 \begin{align*}
 z= & \sum_{t\in t_{gas}}\{p^{other\_operational\_costs}_{gas\_import,t}\cdot v^{flow}_{gas\_import,t}\cdot\Delta_{t}\}+\sum_{t}\{p^{other\_operational\_costs}_{electricity\_import,t}\cdot v^{flow}_{electricity\_import,t}\}\\
  & +\sum_{t}\{p^{startup\_cost}_{nuclear\_unit}\cdot v^{on\_up}_{nuclear\_unit,t}+p^{other\_operational\_costs}_{nuclear\_unit}\cdot v^{flow}_{nuclear\_unit,t}\}\\
- & +\sum_{t}\{p^{penalty}_{demand}\cdot v^{slack}_{demand,t}+p^{procurement\_cost}_{nuclear\_unit,t}\cdot v^{flow,reserve}_{nuclear\_unit,t}+p^{procurement\_cost}_{gas\_unit,t}\cdot v^{flow,reserve}_{gas\_unit,t}\}\\
+ & +\sum_{t}\{p^{procurement\_cost}_{nuclear\_unit,t}\cdot v^{flow,reserve}_{nuclear\_unit,t}+p^{procurement\_cost}_{gas\_unit,t}\cdot v^{flow,reserve}_{gas\_unit,t}\}\\
  & +p^{investment\_cost}_{gas\_unit}\cdot(v^{investment}_{gas\_unit}-p^{existing\_units}_{gas\_unit})\\
  & +p^{investment\_cost}_{wind\_unit}\cdot(v^{investment}_{wind\_unit}-p^{existing\_units}_{wind\_unit})+p^{investment\_cost}_{solar\_unit}\cdot(v^{investment}_{solar\_unit}-p^{existing\_units}_{solar\_unit})
 \end{align*}
@@ -2327,7 +2365,7 @@ v^{state}_{storage,1}= & p^{efficiency,charge}_{storage}\cdot v^{charge}_{storag
 \begin_inset Formula 
 \begin{align*}
 v^{state}_{storage,t}= & p^{efficiency}_{storage}\cdot v^{state}_{storage,t-1}+p^{efficiency,charge}_{storage}\cdot v^{charge}_{storage,t}-v^{discharge}_{storage,t}\\
-\\p^{reserve}_{electricity\_demand,t}=< & v^{flow,reserve}_{gas\_unit,t}+v^{flow,reserve}_{nuclear\_unit,t}+v^{slack}_{electricity\_demand,t}\\
+\\p^{reserve}_{electricity\_demand,t}=< & v^{flow,reserve}_{gas\_unit,t}+v^{flow,reserve}_{nuclear\_unit,t}\\
 \\v^{flow,reserve}_{gas\_unit,t} & \leq p^{max\_reserve}_{gas\_unit}\cdot v^{investment}_{gas\_unit}\\
 v^{flow}_{gas\_unit,out,t}+v^{flow,reserve}_{gas\_unit,t} & \leq p^{capacity}_{gas\_unit}\cdot v^{investment}_{gas\_unit}\\
 v^{flow}_{nuclear\_unit,t}+v^{flow,reserve}_{nuclear\_unit,t} & \leq p^{capacity}_{nuclear\_unit}\cdot p^{existing\_units}_{nuclear\_unit}\cdot v^{on}_{nuclear\_unit,t}\\
@@ -2415,7 +2453,6 @@ p^{existing\_units}_{wind\_unit}\leq & v^{investment}_{wind\_unit} & \leq p^{max
 \begin_layout Standard
 \begin_inset Formula 
 \begin{align*}
-0\leq & v^{slack}_{electricity\_demand,t}\\
 0\leq & v^{flow,reserve}_{gas\_unit,t}\\
 0\leq & v^{flow,reserve}_{nuclear\_unit,t} & \leq p^{max\_reserve}_{nuclear\_unit}\cdot p^{existing\_units}_{nuclear\_unit}\\
 \\0\leq & v^{flow}_{electricity\_distribution,out,t} & \leq p^{capacity}_{electricity\_distribution}\cdot p^{existing\_units}_{electricity\_distribution}\\
