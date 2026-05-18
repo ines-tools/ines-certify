@@ -1,0 +1,4348 @@
+#LyX 2.5 created this file. For more info see https://www.lyx.org/
+\lyxformat 643
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass extreport
+\begin_preamble
+% Added by lyx2lyx
+\setlength{\parskip}{\medskipamount}
+\setlength{\parindent}{0pt}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children no
+\language british
+\language_package default
+\inputencoding auto-legacy
+\fontencoding default
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement H
+\float_alignment class
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder true
+\pdf_colorlinks true
+\pdf_backref page
+\pdf_pdfusetitle true
+\papersize a4
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plainurl
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification default
+\crossref_package refstyle
+\use_formatted_ref 0
+\use_minted 0
+\use_lineno 0
+\backgroundcolor none
+\fontcolor none
+\notefontcolor lightgray
+\boxbgcolor red
+\table_border_color default
+\table_odd_row_color default
+\table_even_row_color default
+\table_alt_row_colors_start 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip medskip
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style british
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tablestyle default
+\bullet 1 0 9 -1
+\bullet 3 0 24 -1
+\tracking_changes false
+\output_changes false
+\change_bars false
+\postpone_fragile_content false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\docbook_table_output 0
+\docbook_mathml_prefix 1
+\docbook_mathml_version 0
+\end_header
+
+\begin_body
+
+\begin_layout Title
+ines certify - a certification process for energy system planning models using the ines-spec
+\end_layout
+
+\begin_layout Author
+Documentation written for the European project Mopo
+\end_layout
+
+\begin_layout Date
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\backslash
+today
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chapter
+Proof of concept for the certification process
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "chap:Certification-process"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The ines-spec describes an interoperable data format that is to be used to ease the communication between different energy system planning models and corresponding input data sets.
+ Instead of multiple conversion scripts between multiple tools,
+ every tool only needs a conversion to and from the ines-spec.
+ To verify the correct working of these scripts,
+ we set up a certification process.
+ At the same time,
+ the certification process allows to verify the proper implementation of certain features in energy system planning models such as,
+ e.g.,
+ reserves.
+\end_layout
+
+\begin_layout Standard
+The certification process consists of a few predefined setups of which the exact solution is known as the optimal solution can be calculated manually.
+ In practice,
+ instead of providing a manual derivation here,
+ we have a custom model for each setup implemented in Julia JuMP.
+ The solutions are still calculated manually to check these custom models but these manual calculations are not documented.
+ The same setup is then also implemented in the ines-spec as well as the original format of the energy system planning model.
+ The conversion script needs to be capable of translating the setup in the ines-spec to the same setup in the energy system planning model.
+ The result of the energy system planning model then also needs to correspond to the solution of the exact solution.
+\end_layout
+
+\begin_layout Standard
+The current state of the certification process is a proof of concept with a select number of setups applied to a single model,
+ i.e.
+ SpineOpt.
+ Of course,
+ SpineOpt succeeds for all of these setups as they have been iteratively aligned during the creation of the proof of concept.
+ The goal is to show the potential of the certification process with the ines-spec.
+ Once a consortium has been formed around the ines-spec,
+ the certification process can be further developed and improved.
+\end_layout
+
+\begin_layout Standard
+In the meantime,
+ the certification process is ready to be adopted by the community.
+ The setups with the ines spec as well as the exact solution remain the same for every tool.
+ Each tool only needs to recreate the setups in their respective format.
+ These setups can then be used to certify the tool directly by comparing the results of the tool with the exact solution or to create/verify the conversion tool from/to ines.
+\end_layout
+
+\begin_layout Standard
+In the following,
+ we describe the repository organisation and the requirements for the workflow in Spine Toolbox.
+ Thereafter,
+ we provide a small overview of all the setups and go into more detail in each of these.
+ In the appendix you can find a non exhaustive overview of additional setups that can be implemented in the future.
+\end_layout
+
+\begin_layout Section*
+Repository organisation and requirements
+\end_layout
+
+\begin_layout Standard
+There is a separate repository for the certification process.
+ However,
+ this repository is only supposed to hold tools and scripts for automation and benchmarking.
+ Automation and benchmarking are not part of the scope of the proof of concept,
+ so currently the repository is just a placeholder.
+ The actually important files are in the ines-spec repository and the repositories of the conversion scripts.
+ The files are always in an 
+\begin_inset Quotes bld
+\end_inset
+
+ines certify
+\begin_inset Quotes brd
+\end_inset
+
+ folder inside these repositories.
+ The ines-spec repository holds the setup in the ines format as well as the corresponding julia script to compute the exact solution.
+ The repositories for the conversion scripts hold the equivalent setups in the format of the energy system planning model,
+ e.g.
+ SpineOpt.
+\end_layout
+
+\begin_layout Standard
+To get the certification process running with SpineOpt,
+ you need to install Spine Toolbox and clone the SpineOpt,
+ SpineInterface,
+ ines-tools,
+ ines-spec,
+ ines-spineopt repositories.
+ More details on the installation and use can be found in the appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:Installation-and-use"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+tuple "list"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+For a new model to join the certification process,
+ they need to create the setups in their own model.
+ The conversion script between the ines-spec and the tool can then be calibrated based on these setups.
+ The results of the model can then be compared to the exact solution for the certification.
+\end_layout
+
+\begin_layout Section*
+Overview
+\end_layout
+
+\begin_layout Standard
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:certification_workflow"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+tuple "list"
+
+\end_inset
+
+ shows the workflow in Spine Toolbox and Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:overview-certification-process"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+tuple "list"
+
+\end_inset
+
+ gives a brief overview of the setups.
+ Essentially the workflow consists of a spine database for every setup of the certification process in the ines-spec.
+ These are fed to the ines to,
+ e.g.,
+ SpineOpt conversion script.
+ After that there is a database for the SpineOpt input data that is preloaded with the SpineOpt template (before the conversion script is used).
+ That input is fed to the energy system planning model,
+ e.g.
+ SpineOpt and the results are stored in another spine database.
+ These results can then be compared manually to the results of the exact solution that is calculated in Julia JuMP outside of Spine Toolbox.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename fig/certification_workflow.png
+	width 100text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Typical workflow for the certification process.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:certification_workflow"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+There are 10 setups in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:overview-certification-process"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+tuple "list"
+
+\end_inset
+
+,
+ 9 of which are considered to be unit tests and 1 is a system test that combines some of the unit tests.
+ Each unit tests focuses on a single feature of energy system planning models.
+ Some features are more complex and therefore build on top of a smaller unit test.
+ The tests are cherry picked to cover some of the more prevalent aspects of energy system planning models,
+ including model detail (unit commitment),
+ operation and investments as well as the stochastic and temporal structure.
+ Algorithms are more difficult to deal with as the solutions can more easily deviate from the exact solution.
+ It is possible to introduce a margin for those setups but that is outside the scope of the proof of concept.
+ We do include an algorithm that is typically more exact,
+ i.e.
+ a simple rolling horizon.
+ Note that all of the setups are rather artificial.
+ The simple reason is that strong simplifications are necessary to make the manual calculations more easy.
+ For example,
+ an efficiency of 0.8 is chosen over an efficiency of 0.9 as the fractions with 0.8 are much easier to deal with.
+ In the following we go more into detail of all of these setups.
+ For each setup there is a small description,
+ a picture of the setup in the ines-spec and the corresponding formulation for the custom model with the exact solution.
+ A legend of the symbols used in the pictures can be found in appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:Ines-spec"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+tuple "list"
+
+\end_inset
+
+.
+ The symbols in the formulation are supposed to be self explanatory as they correspond to the parameters fo the ines-spec (in addition,
+ the letter p stands for parameter and the letter v stands for variable).
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Overview of the setups for the certification process.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="11" columns="2">
+<features borderColor="default" oddRowsColor="default" evenRowsColor="default" tabularvalignment="middle">
+<column alignment="center" valignment="top" varwidth="true" color="default">
+<column alignment="center" valignment="top" varwidth="true" color="default">
+<row color="default">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+name
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+description
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+network = meshed
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Energy balance where the demand equals the supply for a single time step.
+ Triangular (but one directional) network with the two supply units and demand unit.
+ The cheapest unit should be chosen.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+resolution = fixed
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+network = meshed but expanded to a time series.
+ Both units have the same resolution.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+resolution = flexible
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+resolution = fixed but the two units have different resolutions (1h for expensive unit and 2h for cheap unit).
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+stochastic
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+resolution = fixed but there are scenarios for the demand and the resource prices.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+reserves
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+resolution = fixed but there is a demand for reserves.
+ The expensive unit is able to provide reserves but not enough to entirely avoid load shedding.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+unit commitment
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+resolution = fixed but there is unit commitment for both units.
+ There is a minimum uptime,
+ a minimum downtime and a part-load efficiency.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+investment = fixed
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+resolution = fixed but there are investment variables.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+storage
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+resolution = fixed but with storage and renewable unit.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+rolling horizon
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+investment = fixed but there are two horizons and the model rolls from one horizon to the other.
+ The demand is increased in the second horizon.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" bottomline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+combined system
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+A combination of most the previous setups.
+ Sector coupled for the flexible time steps.
+ The gas sector consists of import,
+ demand and gas provision to a gas plant.
+ The electricity sector consists of the gas plant,
+ a nuclear plant,
+ batteries,
+ onshore PV,
+ offshore wind,
+ electricity import and demand.
+ The demand is in the distribution grid,
+ the import and offshore wind is in a separate node.
+ There are stochastics for the demand.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:overview-certification-process"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Some constraints are redundant,
+ e.g.
+ the constraints that dictate that the flow needs to be positive is not necessary for both input and output when the output is equal to a portion of the input.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+network = mesh
+\end_layout
+
+\begin_layout Standard
+The goal of the setup is to test the energy balance in space.
+ To that end the demand and supply are scattered over different nodes.
+ They are connected to each other through directional lines with small losses but sufficient capacity.
+ The lines are directional to avoid circular flows and the lines have losses to avoid multiple possible solutions.
+ One of the supply units is obviously cheaper such that it is very clear what the solution should be.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename fig/network__mesh.png
+	width 75text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Implementation of network = mesh in the ines-spec.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+minimise:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+z= & p^{other\_operational\_costs}_{cheap\_source}\cdot v^{flow}_{cheap\_source}+p^{other\_operational\_costs}_{expensive\_source}\cdot v^{flow}_{expensive\_source}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+subject to:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Possible issues:
+ circular flow (though that is avoided with the directional lines),
+ multiple solutions when the efficiency is 1.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+p^{flow\_profile}_{demand}= & v^{flow}_{cheap\_link,out}+v^{flow}_{expensive\_link,out}\\
+v^{flow}_{cheap\_link,out}= & p^{efficiency}_{cheap\_link}\cdot v^{flow}_{cheap\_link,in}\\
+v^{flow}_{expensive\_link,out}= & p^{efficiency}_{expensive\_link}\cdot v^{flow}_{expensive\_link,in}\\
+v^{flow}_{triangle,out}= & p^{efficiency}_{triangle}\cdot v^{flow}_{triangle,in}\\
+v^{flow}_{cheap\_link,in}= & v^{flow}_{cheap\_supply}+v^{flow}_{triangle,out}\\
+v^{flow}_{expensive\_supply}= & v^{flow}_{expensive\_link,in}+v^{flow}_{triangle,in}\\
+v^{flow}_{expensive\_supply}= & p^{efficiency}_{expensive\_unit}\cdot v^{flow}_{expensive\_source}\\
+v^{flow}_{cheap\_supply}= & p^{efficiency}_{cheap\_unit}\cdot v^{flow}_{cheap\_source}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+bound to:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+0\leq & v^{flow}_{cheap\_link,in}\\
+0\leq & v^{flow}_{cheap\_link,out} & \leq p^{capacity}_{cheap\_link}\cdot p^{existing\_units}_{cheap\_link}\\
+0\leq & v^{flow}_{expensive\_link,in}\\
+0\leq & v^{flow}_{expensive\_link,out} & \leq p^{capacity}_{expensive\_link}\cdot p^{existing\_units}_{expensive\_link}\\
+0\leq & v^{flow}_{triangle,in}\\
+0\leq & v^{flow}_{triangle,out} & \leq p^{capacity}_{triangle}\cdot p^{existing\_units}_{triangle}\\
+0\leq & v^{flow}_{expensive\_supply} & \leq p^{capacity}_{expensive\_unit}\cdot p^{existing\_units}_{expensive\_unit}\\
+0\leq & v^{flow}_{expensive\_source}\\
+0\leq & v^{flow}_{cheap\_supply} & \leq p^{capacity}_{cheap\_unit}\cdot p^{existing\_units}_{cheap\_unit}\\
+0\leq & v^{flow}_{cheap\_source}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+resolution = fixed
+\end_layout
+
+\begin_layout Standard
+The goal of the setup is to test the energy balance in time.
+ To that end,
+ the setup starts from network = meshed and adds a time series for the demand and the supply.
+ All entities have the same resolution.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename fig/resolution__fixed.png
+	width 75text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Implementation of resolution = fixed in the ines-spec.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+minimise:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+z= & \sum_{t}\{p^{other\_operational\_costs}_{cheap\_source,t}\cdot v^{flow}_{cheap\_source,t}+p^{other\_operational\_costs}_{expensive\_source,t}\cdot v^{flow}_{expensive\_source,t}\}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+subject to:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\forall t$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+p^{flow\_profile}_{demand,t}= & v^{flow}_{cheap\_link,out,t}+v^{flow}_{expensive\_link,out,t}\\
+v^{flow}_{cheap\_link,out,t}= & p^{efficiency}_{cheap\_link}\cdot v^{flow}_{cheap\_link,in,t}\\
+v^{flow}_{expensive\_link,out,t}= & p^{efficiency}_{expensive\_link}\cdot v^{flow}_{expensive\_link,in,t}\\
+v^{flow}_{triangle,out,t}= & p^{efficiency}_{triangle}\cdot v^{flow}_{triangle,in,t}\\
+v^{flow}_{cheap\_link,in,t}= & v^{flow}_{cheap\_supply,t}+v^{flow}_{triangle,out,t}\\
+v^{flow}_{expensive\_supply,t}= & v^{flow}_{expensive\_link,in,t}+v^{flow}_{triangle,in,t}\\
+v^{flow}_{expensive\_supply,t}= & p^{efficiency}_{expensive\_unit}\cdot v^{flow}_{expensive\_source,t}\\
+v^{flow}_{cheap\_supply,t}= & p^{efficiency}_{cheap\_unit}\cdot v^{flow}_{cheap\_source,t}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+bound to:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\forall t$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+0\leq & v^{flow}_{cheap\_link,in,t}\\
+0\leq & v^{flow}_{cheap\_link,out,t} & \leq p^{capacity}_{cheap\_link}\cdot p^{existing\_units}_{cheap\_link}\\
+0\leq & v^{flow}_{expensive\_link,in,t}\\
+0\leq & v^{flow}_{expensive\_link,out,t} & \leq p^{capacity}_{expensive\_link}\cdot p^{existing\_units}_{expensive\_link}\\
+0\leq & v^{flow}_{triangle,in,t}\\
+0\leq & v^{flow}_{triangle,out,t} & \leq p^{capacity}_{triangle}\cdot p^{existing\_units}_{triangle}\\
+0\leq & v^{flow}_{expensive\_supply,t} & \leq p^{capacity}_{expensive\_unit}\cdot p^{existing\_units}_{expensive\_unit}\\
+0\leq & v^{flow}_{expensive\_source,t}\\
+0\leq & v^{flow}_{cheap\_supply,t} & \leq p^{capacity}_{cheap\_unit}\cdot p^{existing\_units}_{cheap\_unit}\\
+0\leq & v^{flow}_{cheap\_source,t}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+resolution = flexible
+\end_layout
+
+\begin_layout Standard
+The goal of this setup is to test the energy balance in time and space.
+ To that end,
+ the setup starts from resolution = fixed but reduces the resolution of one of the supply units.
+ The resolution is only changed at the source such that the supply of the unit is still able to provide the same output as before.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Flexible time steps can result in conflicting time steps.
+ Although perhaps the heuristic of the most overlapping time step could be considered the most logical,
+ there are different design decisions.
+ Therefore,
+ conflicting time steps need to be avoided in the certification process to avoid arbitrary fails.
+ Though,
+ later on,
+ as an extension,
+ a setup can be devised where all possible design decisions need to fall within a margin.
+ The challenge herein is to ensure that this margin does not allow for other errors to slip in.
+ The chance of that happening can be reduced by designing a set of tests that test all the other functionalities first.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename fig/resolution__flexible.png
+	width 75text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Implementation of resolution = flexible in the ines-spec.
+ The setup is similar as befor but there is a time set with a different resolution attached to the cheap source.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+minimise:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+z= & \sum_{t\in t_{cheap}}\{p^{other\_operational\_costs}_{cheap\_source,t}\cdot v^{flow}_{cheap\_source,t}\cdot\Delta_{t_{cheap}}\}+\sum_{t}\{p^{other\_operational\_costs}_{expensive\_source,t}\cdot v^{flow}_{expensive\_source,t}\}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+subject to:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\forall t$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+p^{flow\_profile}_{demand,t}= & v^{flow}_{cheap\_link,out,t}+v^{flow}_{expensive\_link,out,t}\\
+v^{flow}_{cheap\_link,out,t}= & p^{efficiency}_{cheap\_link}\cdot v^{flow}_{cheap\_link,in,t}\\
+v^{flow}_{expensive\_link,out,t}= & p^{efficiency}_{expensive\_link}\cdot v^{flow}_{expensive\_link,in,t}\\
+v^{flow}_{triangle,out,t}= & p^{efficiency}_{triangle}\cdot v^{flow}_{triangle,in,t}\\
+v^{flow}_{cheap\_link,in,t}= & v^{flow}_{cheap\_supply,t}+v^{flow}_{triangle,out,t}\\
+v^{flow}_{expensive\_supply,t}= & v^{flow}_{expensive\_link,in,t}+v^{flow}_{triangle,in,t}\\
+v^{flow}_{expensive\_supply,t}= & p^{efficiency}_{expensive\_unit}\cdot v^{flow}_{expensive\_source,t}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\forall t_{cheap}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\sum_{t\in[t_{cheap}:t_{cheap}+\Delta_{t_{cheap}}]}v^{flow}_{cheap\_supply,t}\cdot1h= & p^{efficiency}_{cheap\_unit}\cdot v^{flow}_{cheap\_source,t_{cheap}}\cdot\Delta_{t_{cheap}}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+bound to:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\forall t$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+0\leq & v^{flow}_{cheap\_link,in,t}\\
+0\leq & v^{flow}_{cheap\_link,out,t} & \leq p^{capacity}_{cheap\_link}\cdot p^{existing\_units}_{cheap\_link}\\
+0\leq & v^{flow}_{expensive\_link,in,t}\\
+0\leq & v^{flow}_{expensive\_link,out,t} & \leq p^{capacity}_{expensive\_link}\cdot p^{existing\_units}_{expensive\_link}\\
+0\leq & v^{flow}_{triangle,in,t}\\
+0\leq & v^{flow}_{triangle,out,t} & \leq p^{capacity}_{triangle}\cdot p^{existing\_units}_{triangle}\\
+0\leq & v^{flow}_{expensive\_supply,t} & \leq p^{capacity}_{expensive\_unit}\cdot p^{existing\_units}_{expensive\_unit}\\
+0\leq & v^{flow}_{expensive\_source,t}\\
+0\leq & v^{flow}_{cheap\_supply,t} & \leq p^{capacity}_{cheap\_unit}\cdot p^{existing\_units}_{cheap\_unit}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\forall t_{cheap}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+0\leq & v^{flow}_{cheap\_source,t_{cheap}} & \leq\frac{1}{p^{efficiency}_{cheap\_unit}}\cdot p^{capacity}_{cheap\_unit}\cdot p^{existing\_units}_{cheap\_unit}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+stochastic
+\end_layout
+
+\begin_layout Standard
+The goal of this setup is to test scenarios in the formulation.
+ To that end the setup starts from resolution = fixed and adds stochastics for the demand and the commodity prices.
+ The demand can be high and low and the commodity prices can be expensive or cheap.
+ Combining these scenarios,
+ results in 4 equally likely scenarios for the entire model.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+SpineOpt has some other stochastic options like the DAG but that is rather specific.
+ Independent and unit-specific stochastics is already good enough
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename fig/stochastic.png
+	width 75text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Implementation of stochastic in the ines-spec.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+minimise:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+z= & \sum_{s}\{p^{weight}_{s}\cdot\sum_{t}\{p^{other\_operational\_costs}_{cheap\_source,t,s}\cdot v^{flow}_{cheap\_source,t,s}+p^{other\_operational\_costs}_{expensive\_source,t,s}\cdot v^{flow}_{expensive\_source,t,s}\}\}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+subject to:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\forall t,\forall s$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+v^{flow}_{cheap\_link,out,t,s}= & p^{efficiency}_{cheap\_link}\cdot v^{flow}_{cheap\_link,in,t,s}\\
+v^{flow}_{expensive\_link,out,t,s}= & p^{efficiency}_{expensive\_link}\cdot v^{flow}_{expensive\_link,in,t,s}\\
+v^{flow}_{triangle,out,t,s}= & p^{efficiency}_{triangle}\cdot v^{flow}_{triangle,in,t,s}\\
+v^{flow}_{cheap\_link,in,t,s}= & v^{flow}_{cheap\_supply,t,s}+v^{flow}_{triangle,out,t,s}\\
+v^{flow}_{expensive\_supply,t,s}= & v^{flow}_{expensive\_link,in,t,s}+v^{flow}_{triangle,in,t,s}\\
+v^{flow}_{expensive\_supply,t,s}= & p^{efficiency}_{expensive\_unit}\cdot v^{flow}_{expensive\_source,t,s}\\
+v^{flow}_{cheap\_supply,t,s}= & p^{efficiency}_{cheap\_unit}\cdot v^{flow}_{cheap\_source,t,s}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+bound to:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\forall t,\forall s$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+0\leq & v^{flow}_{cheap\_link,in,t,s}\\
+0\leq & v^{flow}_{cheap\_link,out,t,s} & \leq p^{capacity}_{cheap\_link}\cdot p^{existing\_units}_{cheap\_link}\\
+0\leq & v^{flow}_{expensive\_link,in,t,s}\\
+0\leq & v^{flow}_{expensive\_link,out,t,s} & \leq p^{capacity}_{expensive\_link}\cdot p^{existing\_units}_{expensive\_link}\\
+0\leq & v^{flow}_{triangle,in,t,s}\\
+0\leq & v^{flow}_{triangle,out,t,s} & \leq p^{capacity}_{triangle}\cdot p^{existing\_units}_{triangle}\\
+0\leq & v^{flow}_{expensive\_supply,t,s} & \leq p^{capacity}_{expensive\_unit}\cdot p^{existing\_units}_{expensive\_unit}\\
+0\leq & v^{flow}_{expensive\_source,t,s}\\
+0\leq & v^{flow}_{cheap\_supply,t,s} & \leq p^{capacity}_{cheap\_unit}\cdot p^{existing\_units}_{cheap\_unit}\\
+0\leq & v^{flow}_{cheap\_source,t,s}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+reserves
+\end_layout
+
+\begin_layout Standard
+The goal of this setup is to test the reserve requirements.
+ To that end the setup starts from resolution = fixed and adds a reserve requirement to the demand.
+ The reserves can be provided by the two units but there is also the possibility of load shedding (through a slack variable of the demand).
+ A common way to include reserves is by working with a reserve node,
+ dismissing the capacity restrictions of the lines.
+ For the proof of concept,
+ we limit ourselves to upward reserves.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename fig/reserves.png
+	width 75text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Implementation of reserves in the ines-spec.
+ There is a separate reserve entity which is connected to the cheap unit,
+ the expensive unit and the demand.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+minimise:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+z= & \sum_{t}\{p^{other\_operational\_costs}_{cheap\_source,t}\cdot v^{flow}_{cheap\_source,t}+p^{other\_operational\_costs}_{expensive\_source,t}\cdot v^{flow}_{expensive\_source,t}\}\\
+ & +\sum_{t}\{p^{penalty}_{demand}\cdot v^{slack}_{demand,t}+p^{procurement\_cost}_{cheap\_supply,t}\cdot v^{flow,reserve}_{cheap\_supply,t}+p^{procurement\_cost}_{expensive\_supply,t}\cdot v^{flow,reserve}_{expensive\_supply,t}\}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+subject to:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\forall t$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+p^{reserve}_{demand,t}=< & v^{flow,reserve}_{cheap\_supply,t}+v^{flow,reserve}_{expensive\_supply,t}+v^{slack}_{demand,t}\\
+\\p^{flow\_profile}_{demand,t}= & v^{flow}_{cheap\_link,out,t}+v^{flow}_{expensive\_link,out,t}\\
+\\v^{flow}_{cheap\_link,out,t}= & p^{efficiency}_{cheap\_link}\cdot v^{flow}_{cheap\_link,in,t}\\
+v^{flow}_{expensive\_link,out,t}= & p^{efficiency}_{expensive\_link}\cdot v^{flow}_{expensive\_link,in,t}\\
+v^{flow}_{triangle,out,t}= & p^{efficiency}_{triangle}\cdot v^{flow}_{triangle,in,t}\\
+\\v^{flow}_{cheap\_link,in,t}= & v^{flow}_{cheap\_supply,t}+v^{flow}_{triangle,out,t}\\
+v^{flow}_{expensive\_supply,t}= & v^{flow}_{expensive\_link,in,t}+v^{flow}_{triangle,in,t}\\
+\\v^{flow}_{expensive\_supply,t}= & p^{efficiency}_{expensive\_unit}\cdot v^{flow}_{expensive\_source,t}\\
+v^{flow}_{cheap\_supply,t}= & p^{efficiency}_{cheap\_unit}\cdot v^{flow}_{cheap\_source,t}\\
+\\v^{flow}_{expensive\_supply,t}+v^{flow,reserve}_{expensive\_supply,t} & \leq p^{capacity}_{expensive\_unit}\cdot p^{existing\_units}_{expensive\_unit}\\
+v^{flow}_{cheap\_supply,t}+v^{flow,reserve}_{expensive\_supply,t} & \leq p^{capacity}_{cheap\_unit}\cdot p^{existing\_units}_{cheap\_unit}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+bound to:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\forall t$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+0\leq & v^{slack}_{demand,t}\\
+0\leq & v^{flow,reserve}_{cheap\_supply,t} & \leq p^{max\_reserve}_{cheap\_unit}\cdot p^{existing\_units}_{cheap\_unit}\\
+0\leq & v^{flow,reserve}_{expensive\_supply,t} & \leq p^{max\_reserve}_{expensive\_unit}\cdot p^{existing\_units}_{expensive\_unit}\\
+\\0\leq & v^{flow}_{cheap\_link,in,t}\\
+0\leq & v^{flow}_{cheap\_link,out,t} & \leq p^{capacity}_{cheap\_link}\cdot p^{existing\_units}_{cheap\_link}\\
+0\leq & v^{flow}_{expensive\_link,in,t}\\
+0\leq & v^{flow}_{expensive\_link,out,t} & \leq p^{capacity}_{expensive\_link}\cdot p^{existing\_units}_{expensive\_link}\\
+0\leq & v^{flow}_{triangle,in,t}\\
+0\leq & v^{flow}_{triangle,out,t} & \leq p^{capacity}_{triangle}\cdot p^{existing\_units}_{triangle}\\
+\\0\leq & v^{flow}_{expensive\_supply,t} & \leq p^{capacity}_{expensive\_unit}\cdot p^{existing\_units}_{expensive\_unit}\\
+0\leq & v^{flow}_{expensive\_source,t}\\
+0\leq & v^{flow}_{cheap\_supply,t} & \leq p^{capacity}_{cheap\_unit}\cdot p^{existing\_units}_{cheap\_unit}\\
+0\leq & v^{flow}_{cheap\_source,t}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+unit commitment
+\end_layout
+
+\begin_layout Standard
+The goal of this setup is to test the unit commitment functionality.
+ To that end,
+ the setup starts from resolution = fixed but adds on/off state variables to the supply units.
+ The commitment is constrained by the minimum up and downtime and there is a cost associated to starting units.
+ There are no initial conditions for these constraints as the model can choose the ideal starting point for the units that are on.
+ The underlying assumption is that the system was already running before the simulation and that the demand was similar to the demand in the first step.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+There does not seem to be a parameter for the minimum operating point yet => left for future setups
+\end_layout
+
+\begin_layout Plain Layout
+The equations of v_on need to be reviewed.
+ Current interpretation is that p_capacity*p_existing_units act as a single unit that is turned on or off.
+ Same for combined system.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename fig/unit_commitment.png
+	width 75text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Implementation of unit commitment in the ines-spec.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+minimise:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+z= & \sum_{t}\{p^{startup\_cost}_{cheap\_unit}\cdot v^{on\_up.}_{cheap\_unit,t}+p^{other\_operational\_costs}_{cheap\_source,t}\cdot v^{flow}_{cheap\_source,t}\\
+ & +p^{startup\_cost}_{expensive\_unit}\cdot v^{on\_up.}_{expensive\_unit,t}+p^{other\_operational\_costs}_{expensive\_source,t}\cdot v^{flow}_{expensive\_source,t}\}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+subject to:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\forall t$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+p^{flow\_profile}_{demand,t}= & v^{flow}_{cheap\_link,out,t}+v^{flow}_{expensive\_link,out,t}\\
+\\v^{flow}_{cheap\_link,out,t}= & p^{efficiency}_{cheap\_link}\cdot v^{flow}_{cheap\_link,in,t}\\
+v^{flow}_{expensive\_link,out,t}= & p^{efficiency}_{expensive\_link}\cdot v^{flow}_{expensive\_link,in,t}\\
+v^{flow}_{triangle,out,t}= & p^{efficiency}_{triangle}\cdot v^{flow}_{triangle,in,t}\\
+\\v^{flow}_{cheap\_link,in,t}= & v^{flow}_{cheap\_supply,t}+v^{flow}_{triangle,out,t}\\
+v^{flow}_{expensive\_supply,t}= & v^{flow}_{expensive\_link,in,t}+v^{flow}_{triangle,in,t}\\
+\\v^{flow}_{expensive\_supply,t}= & p^{efficiency}_{expensive\_unit}\cdot v^{flow}_{expensive\_source,t}\\
+v^{flow}_{cheap\_supply,t}= & p^{efficiency}_{cheap\_unit}\cdot v^{flow}_{cheap\_source,t}\\
+\\v^{on}_{cheap\_unit,t}= & v^{on}_{cheap\_unit,t-1}+v^{on\_up}_{cheap\_unit,t}-v^{on\_down}_{cheap\_unit,t}\\
+v^{on}_{expensive\_unit,t}= & v^{on}_{expensive\_unit,t-1}+v^{on\_up}_{expensive\_unit,t}-v^{on\_down}_{expensive\_unit,t}\\
+\\v^{flow}_{cheap\_supply,t} & \leq p^{capacity}_{cheap\_unit}\cdot p^{existing\_units}_{cheap\_unit}\cdot v^{on}_{cheap\_unit,t}\\
+v^{flow}_{expensive\_supply,t} & \leq p^{capacity}_{expensive\_unit}\cdot p^{existing\_units}_{expensive\_unit}\cdot v^{on}_{expensive\_unit,t}\\
+\\v^{on\_up}_{cheap\_unit,t}\leq & 1-v^{on}_{cheap\_unit,t}-\sum^{MDT-1}_{t'=1}v^{on\_down}_{cheap\_unit,t-t'}\\
+v^{on\_down}_{cheap\_unit,t}\leq & v^{on}_{cheap\_unit,t}-\sum^{MUT-1}_{t'=1}v^{on\_up}_{cheap\_unit,t-t'}\\
+v^{on\_up}_{expensive\_unit,t}\leq & 1-v^{on}_{expensive\_unit,t}-\sum^{MDT-1}_{t'=1}v^{on\_down}_{expensive\_unit,t-t'}\\
+v^{on\_down}_{expensive\_unit,t}\leq & v^{on}_{expensive\_unit,t}-\sum^{MUT-1}_{t'=1}v^{on\_up}_{expensive\_unit,t-t'}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+bound to:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\forall t$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+0\leq & v^{flow}_{cheap\_link,in,t}\\
+0\leq & v^{flow}_{cheap\_link,out,t} & \leq p^{capacity}_{cheap\_link}\cdot p^{existing\_units}_{cheap\_link}\\
+0\leq & v^{flow}_{expensive\_link,in,t}\\
+0\leq & v^{flow}_{expensive\_link,out,t} & \leq p^{capacity}_{expensive\_link}\cdot p^{existing\_units}_{expensive\_link}\\
+0\leq & v^{flow}_{triangle,in,t}\\
+0\leq & v^{flow}_{triangle,out,t} & \leq p^{capacity}_{triangle}\cdot p^{existing\_units}_{triangle}\\
+\\0\leq & v^{flow}_{expensive\_supply,t}\\
+0\leq & v^{flow}_{expensive\_source,t}\\
+\\0\leq & v^{flow}_{cheap\_supply,t}\\
+0\leq & v^{flow}_{cheap\_source,t}\\
+\\ & v^{on}_{cheap\_unit,t}\in\{0,1\}\\
+ & v^{on\_up}_{cheap\_unit,t}\in\{0,1\}\\
+ & v^{on\_down}_{cheap\_unit,t}\in\{0,1\}\\
+ & v^{on}_{expensive\_unit,t}\in\{0,1\}\\
+ & v^{on\_up}_{expensive\_unit,t}\in\{0,1\}\\
+ & v^{on\_down}_{expensive\_unit,t}\in\{0,1\}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Partload efficiency:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $+(1-\frac{p^{efficiency}_{expensive\_unit}}{p^{efficiency\_min}_{expensive\_unit}})\cdot p^{capacity\_min}_{expensive\_unit}\cdot p^{existing\_units}_{expensive\_unit}\cdot v^{on}_{expensive\_unit,t}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Minimum operating point:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $v^{flow}_{expensive\_supply,t}\geq p^{capacity\_min}_{expensive\_unit}\cdot p^{existing\_units}_{expensive\_unit}\cdot v^{on}_{expensive\_unit,t}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+investments = fixed
+\end_layout
+
+\begin_layout Standard
+The goal of this setup is to test basic investments.
+ To that end the resolution = fixed setup is expanded with investment variables.
+ The expensive unit is already invested in to incentivise the model to keep using the expensive unit.
+ In the formulation below,
+ for brevity,
+ the investment cost is to be interpreted as the cost per unit,
+ as opposed to the cost per MW(h).
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+does that need to change?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename fig/unit_commitment.png
+	width 75text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Implementation of investment = fixed in the ines-spec.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+minimise:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+z= & p^{investment\_cost}_{cheap\_unit}\cdot v^{investment}_{cheap\_unit}+p^{investment\_cost}_{expensive\_unit}\cdot(v^{investment}_{expensive\_unit}-p^{existing\_units}_{expensive\_unit})\\
+ & +\sum_{t}\{p^{other\_operational\_costs}_{cheap\_source,t}\cdot v^{flow}_{cheap\_source,t}+p^{other\_operational\_costs}_{expensive\_source,t}\cdot v^{flow}_{expensive\_source,t}\}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+subject to:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\forall t$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+p^{flow\_profile}_{demand,t}= & v^{flow}_{cheap\_link,out,t}+v^{flow}_{expensive\_link,out,t}\\
+\\v^{flow}_{cheap\_link,out,t}= & p^{efficiency}_{cheap\_link}\cdot v^{flow}_{cheap\_link,in,t}\\
+v^{flow}_{expensive\_link,out,t}= & p^{efficiency}_{expensive\_link}\cdot v^{flow}_{expensive\_link,in,t}\\
+v^{flow}_{triangle,out,t}= & p^{efficiency}_{triangle}\cdot v^{flow}_{triangle,in,t}\\
+\\v^{flow}_{cheap\_link,in,t}= & v^{flow}_{cheap\_supply,t}+v^{flow}_{triangle,out,t}\\
+v^{flow}_{expensive\_supply,t}= & v^{flow}_{expensive\_link,in,t}+v^{flow}_{triangle,in,t}\\
+\\v^{flow}_{expensive\_supply,t}= & p^{efficiency}_{expensive\_unit}\cdot v^{flow}_{expensive\_source,t}\\
+v^{flow}_{cheap\_supply,t}= & p^{efficiency}_{cheap\_unit}\cdot v^{flow}_{cheap\_source,t}\\
+\\v^{flow}_{expensive\_supply,t}\leq & p^{capacity}_{expensive\_unit}\cdot v^{investment}_{expensive\_unit}\\
+v^{flow}_{cheap\_supply,t}\leq & p^{capacity}_{cheap\_unit}\cdot v^{investment}_{cheap\_unit}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+bound to:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+0\leq & v^{investment}_{cheap\_unit}\\
+p^{existing\_units}_{expensive\_unit}\leq & v^{investment}_{expensive\_unit}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\forall t$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+0\leq & v^{flow}_{cheap\_link,in,t}\\
+0\leq & v^{flow}_{cheap\_link,out,t} & \leq p^{capacity}_{cheap\_link}\cdot p^{existing\_units}_{cheap\_link}\\
+0\leq & v^{flow}_{expensive\_link,in,t}\\
+0\leq & v^{flow}_{expensive\_link,out,t} & \leq p^{capacity}_{expensive\_link}\cdot p^{existing\_units}_{expensive\_link}\\
+0\leq & v^{flow}_{triangle,in,t}\\
+0\leq & v^{flow}_{triangle,out,t} & \leq p^{capacity}_{triangle}\cdot p^{existing\_units}_{triangle}\\
+0\leq & v^{flow}_{expensive\_supply,t}\\
+0\leq & v^{flow}_{expensive\_source,t}\\
+0\leq & v^{flow}_{cheap\_supply,t}\\
+0\leq & v^{flow}_{cheap\_source,t}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+storage
+\end_layout
+
+\begin_layout Standard
+The goal of this setup is to test an ideal storage formulation.
+ To that end,
+ storage and a renewable unit are added to the resolution = fixed setup.
+ The storage unit is located at the cheap supply side and the renewable unit is located at the expensive supply side.
+ Storage starts empty.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+The storage methods are different and also result in different numbers.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename fig/storage.png
+	width 75text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Implementation of storage in the ines-spec.
+ Storage is located at the node of the cheap supply.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+minimise:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+z= & \sum_{t}\{p^{other\_operational\_costs}_{cheap\_source,t}\cdot v^{flow}_{cheap\_source,t}+p^{other\_operational\_costs}_{expensive\_source,t}\cdot v^{flow}_{expensive\_source,t}\}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+subject to:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+v^{state}_{storage,1}= & p^{efficiency,charge}_{storage}\cdot v^{charge}_{storage,1}-v^{discharge}_{storage,1}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\forall t$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+v^{state}_{storage,t}= & p^{efficiency}_{storage}\cdot v^{state}_{storage,t-1}+p^{efficiency,charge}_{storage}\cdot v^{charge}_{storage,t}-v^{discharge}_{storage,t}\\
+\\p^{flow\_profile}_{demand,t}= & v^{flow}_{cheap\_link,out,t}+v^{flow}_{expensive\_link,out,t}\\
+\\v^{flow}_{cheap\_link,out,t}= & p^{efficiency}_{cheap\_link}\cdot v^{flow}_{cheap\_link,in,t}\\
+v^{flow}_{expensive\_link,out,t}= & p^{efficiency}_{expensive\_link}\cdot v^{flow}_{expensive\_link,in,t}\\
+v^{flow}_{triangle,out,t}= & p^{efficiency}_{triangle}\cdot v^{flow}_{triangle,in,t}\\
+\\v^{flow}_{cheap\_link,in,t}+v^{charge}_{storage,t}= & v^{flow}_{cheap\_supply,t}+v^{flow}_{triangle,out,t}+p^{efficiency,discharge}_{storage}\cdot v^{discharge}_{storage,t}\\
+v^{flow}_{expensive\_supply,t}+v^{flow}_{renewable,t}= & v^{flow}_{expensive\_link,in,t}+v^{flow}_{triangle,in,t}\\
+\\v^{flow}_{expensive\_supply,t}= & p^{efficiency}_{expensive\_unit}\cdot v^{flow}_{expensive\_source,t}\\
+v^{flow}_{cheap\_supply,t}= & p^{efficiency}_{cheap\_unit}\cdot v^{flow}_{cheap\_source,t}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Cyclic condition:
+ 
+\begin_inset Formula $v^{state}_{storage,1}=p^{efficiency}_{storage}\cdot v^{state}_{storage,T}+p^{efficiency,charge}_{storage}\cdot v^{charge}_{storage,1}-v^{discharge}_{storage,1}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+bound to:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\forall t$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+0\leq & v^{flow}_{cheap\_link,in,t}\\
+0\leq & v^{flow}_{cheap\_link,out,t} & \leq p^{capacity}_{cheap\_link}\cdot p^{existing\_units}_{cheap\_link}\\
+0\leq & v^{flow}_{expensive\_link,in,t}\\
+0\leq & v^{flow}_{expensive\_link,out,t} & \leq p^{capacity}_{expensive\_link}\cdot p^{existing\_units}_{expensive\_link}\\
+0\leq & v^{flow}_{triangle,in,t}\\
+0\leq & v^{flow}_{triangle,out,t} & \leq p^{capacity}_{triangle}\cdot p^{existing\_units}_{triangle}\\
+\\0\leq & v^{flow}_{cheap\_source,t}\\
+0\leq & v^{flow}_{cheap\_supply,t} & \leq p^{capacity}_{cheap\_unit}\cdot p^{existing\_units}_{cheap\_unit}\\
+0\leq & v^{flow}_{expensive\_source,t}\\
+0\leq & v^{flow}_{expensive\_supply,t} & \leq p^{capacity}_{expensive\_unit}\cdot p^{existing\_units}_{expensive\_unit}\\
+\\0\leq & v^{flow}_{renewable,t} & \leq p^{flow\_profile}_{renewable,t}\cdot p^{capacity}_{renewable}\cdot p^{existing\_units}_{renewable}\\
+\\0\leq & v^{charge}_{storage,t} & \leq p^{capacity\_charge}_{storage}\cdot p^{existing\_units}_{storage}\\
+0\leq & v^{discharge}_{storage,t} & \leq p^{capacity\_discharge}_{storage}\cdot p^{existing\_units}_{storage}\\
+0\leq & v^{state}_{storage,t} & \leq p^{capacity}_{storage}\cdot p^{existing\_units}_{storage}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+rolling horizon
+\end_layout
+
+\begin_layout Standard
+The goal of the setup is to test a rolling horizon.
+ To that end the investment = fixed setup is expanded with a second horizon.
+ Each horizon uses the same formulation.
+ In the first horizon,
+ there is already a small investment in expensive units and the model needs to invest in cheaper units.
+ The second window has a higher demand requiring additional investments but there is also a shift in commodity prices such that the more 
+\begin_inset Quotes bld
+\end_inset
+
+expensive
+\begin_inset Quotes brd
+\end_inset
+
+ unit becomes more attractive,
+ yet there are already the investments from the first window in the 
+\begin_inset Quotes bld
+\end_inset
+
+cheaper
+\begin_inset Quotes brd
+\end_inset
+
+ units.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename fig/rolling_horizon.png
+	width 75text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Implementation of unit commitment in the ines-spec.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+minimise:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+z= & p^{investment\_cost}_{cheap\_unit}\cdot(v^{investment}_{cheap\_unit}-p^{existing\_units}_{cheap\_unit})+p^{investment\_cost}_{expensive\_unit}\cdot(v^{investment}_{expensive\_unit}-p^{existing\_units}_{expensive\_unit})\\
+ & +\sum_{t}\{p^{other\_operational\_costs}_{cheap\_source,t}\cdot v^{flow}_{cheap\_source,t}+p^{other\_operational\_costs}_{expensive\_source,t}\cdot v^{flow}_{expensive\_source,t}\}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+subject to:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\forall t$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+p^{flow\_profile}_{demand,t}= & v^{flow}_{cheap\_link,out,t}+v^{flow}_{expensive\_link,out,t}\\
+\\v^{flow}_{cheap\_link,out,t}= & p^{efficiency}_{cheap\_link}\cdot v^{flow}_{cheap\_link,in,t}\\
+v^{flow}_{expensive\_link,out,t}= & p^{efficiency}_{expensive\_link}\cdot v^{flow}_{expensive\_link,in,t}\\
+v^{flow}_{triangle,out,t}= & p^{efficiency}_{triangle}\cdot v^{flow}_{triangle,in,t}\\
+\\v^{flow}_{cheap\_link,in,t}= & v^{flow}_{cheap\_supply,t}+v^{flow}_{triangle,out,t}\\
+v^{flow}_{expensive\_supply,t}= & v^{flow}_{expensive\_link,in,t}+v^{flow}_{triangle,in,t}\\
+\\v^{flow}_{expensive\_supply,t}= & p^{efficiency}_{expensive\_unit}\cdot v^{flow}_{expensive\_source,t}\\
+v^{flow}_{cheap\_supply,t}= & p^{efficiency}_{cheap\_unit}\cdot v^{flow}_{cheap\_source,t}\\
+\\v^{flow}_{expensive\_supply,t}\leq & p^{capacity}_{expensive\_unit}\cdot v^{investment}_{expensive\_unit}\\
+v^{flow}_{cheap\_supply,t}\leq & p^{capacity}_{cheap\_unit}\cdot v^{investment}_{cheap\_unit}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+bound to:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+p^{existing\_units}_{cheap\_unit}\leq & v^{investment}_{cheap\_unit}\\
+p^{existing\_units}_{expensive\_unit}\leq & v^{investment}_{expensive\_unit}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\forall t$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+0\leq & v^{flow}_{cheap\_link,in,t}\\
+0\leq & v^{flow}_{cheap\_link,out,t} & \leq p^{capacity}_{cheap\_link}\cdot p^{existing\_units}_{cheap\_link}\\
+0\leq & v^{flow}_{expensive\_link,in,t}\\
+0\leq & v^{flow}_{expensive\_link,out,t} & \leq p^{capacity}_{expensive\_link}\cdot p^{existing\_units}_{expensive\_link}\\
+0\leq & v^{flow}_{triangle,in,t}\\
+0\leq & v^{flow}_{triangle,out,t} & \leq p^{capacity}_{triangle}\cdot p^{existing\_units}_{triangle}\\
+0\leq & v^{flow}_{expensive\_supply,t}\\
+0\leq & v^{flow}_{expensive\_source,t}\\
+0\leq & v^{flow}_{cheap\_supply,t}\\
+0\leq & v^{flow}_{cheap\_source,t}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+combined system
+\end_layout
+
+\begin_layout Standard
+The goal of this setup is to test systems that combine some of the different features.
+ This setup is a combination of all the previous setups (except for the stochastics and rolling horizon to reduce the complexity for calculations by hand).
+ It is sector coupled for the flexible time steps.
+ The gas sector consists of import,
+ demand and gas provision to a gas plant.
+ The electricity sector consists of the gas plant,
+ a nuclear plant,
+ batteries,
+ onshore PV,
+ offshore wind,
+ electricity import and demand.
+ The demand is in the distribution grid,
+ the import and offshore wind is in a separate node.
+ The nuclear plant,
+ batteries and import are already there,
+ but the model can invest in a limited amount of gas plants and renewable energy systems.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+stochastic does not work with investment in SpineOpt?
+\end_layout
+
+\begin_layout Plain Layout
+rolling horizon does not work with flexible time steps in SpineOpt?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename fig/combined_system.png
+	width 75text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+combined system
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+minimise:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+z= & \sum_{t\in t_{gas}}\{p^{other\_operational\_costs}_{gas\_import,t}\cdot v^{flow}_{gas\_import,t}\cdot\Delta_{t}\}+\sum_{t}\{p^{other\_operational\_costs}_{electricity\_import,t}\cdot v^{flow}_{electricity\_import,t}\}\\
+ & +\sum_{t}\{p^{startup\_cost}_{nuclear\_unit}\cdot v^{on\_up}_{nuclear\_unit,t}+p^{other\_operational\_costs}_{nuclear\_unit}\cdot v^{flow}_{nuclear\_unit,t}\}\\
+ & +\sum_{t}\{p^{penalty}_{demand}\cdot v^{slack}_{demand,t}+p^{procurement\_cost}_{nuclear\_unit,t}\cdot v^{flow,reserve}_{nuclear\_unit,t}+p^{procurement\_cost}_{gas\_unit,t}\cdot v^{flow,reserve}_{gas\_unit,t}\}\\
+ & +p^{investment\_cost}_{gas\_unit}\cdot(v^{investment}_{gas\_unit}-p^{existing\_units}_{gas\_unit})\\
+ & +p^{investment\_cost}_{wind\_unit}\cdot(v^{investment}_{wind\_unit}-p^{existing\_units}_{wind\_unit})+p^{investment\_cost}_{solar\_unit}\cdot(v^{investment}_{solar\_unit}-p^{existing\_units}_{solar\_unit})
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+subject to:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+v^{state}_{storage,1}= & p^{efficiency,charge}_{storage}\cdot v^{charge}_{storage,1}-v^{discharge}_{storage,1}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\forall t$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+v^{state}_{storage,t}= & p^{efficiency}_{storage}\cdot v^{state}_{storage,t-1}+p^{efficiency,charge}_{storage}\cdot v^{charge}_{storage,t}-v^{discharge}_{storage,t}\\
+\\p^{reserve}_{electricity\_demand,t}=< & v^{flow,reserve}_{gas\_unit,t}+v^{flow,reserve}_{nuclear\_unit,t}+v^{slack}_{electricity\_demand,t}\\
+\\v^{flow,reserve}_{gas\_unit,t} & \leq p^{max\_reserve}_{gas\_unit}\cdot v^{investment}_{gas\_unit}\\
+v^{flow}_{gas\_unit,out,t}+v^{flow,reserve}_{gas\_unit,t} & \leq p^{capacity}_{gas\_unit}\cdot v^{investment}_{gas\_unit}\\
+v^{flow}_{nuclear\_unit,t}+v^{flow,reserve}_{nuclear\_unit,t} & \leq p^{capacity}_{nuclear\_unit}\cdot p^{existing\_units}_{nuclear\_unit}\cdot v^{on}_{nuclear\_unit,t}\\
+\\p^{flow\_profile}_{electricity\_demand,t}= & v^{flow}_{electricity\_distribution,out,t}+v^{flow}_{solar\_unit,t}\\
+v^{flow}_{electricity\_distribution,in,t}= & v^{flow}_{electricity\_transport,out,t}+v^{flow}_{nuclear\_unit,t}+v^{flow}_{gas\_unit,out,t}\\
+v^{flow}_{electricity\_transport,in,t}= & v^{flow}_{wind\_unit,t}+v^{flow}_{electricity\_import,t}\\
+\\v^{flow}_{electricity\_distribution,out,t}= & p^{efficiency}_{electricity\_distribution}\cdot v^{flow}_{electricity\_distribution,in,t}\\
+v^{flow}_{electricity\_transport,out,t}= & p^{efficiency}_{electricity\_transport}\cdot v^{flow}_{electricity\_transport,in,t}\\
+\\v^{flow}_{solar\_unit,t} & \leq p^{flow\_profile}_{solar\_unit,t}\cdot p^{capacity}_{solar\_unit}\cdot v^{investment}_{solar\_unit}\\
+v^{flow}_{wind\_unit,t} & \leq p^{flow\_profile}_{wind\_unit,t}\cdot p^{capacity}_{wind\_unit}\cdot v^{investment}_{wind\_unit}\\
+\\v^{flow}_{gas\_unit,out,t} & \leq p^{capacity}_{gas\_unit}\cdot v^{investment}_{gas\_unit}\\
+\\v^{on}_{nuclear\_unit,t}= & v^{on}_{nuclear\_unit,t-1}+v^{on\_up}_{nuclear\_unit,t}-v^{on\_down}_{nuclear\_unit,t}\\
+v^{on\_up}_{nuclear\_unit,t}\leq & 1-v^{on}_{nuclear\_unit,t}-\sum^{MDT-1}_{t'=1}v^{on\_down}_{nuclear\_unit,t-t'}\\
+v^{on\_down}_{nuclear\_unit,t}\leq & v^{on}_{nuclear\_unit,t}-\sum^{MUT-1}_{t'=1}v^{on\_up}_{nuclear\_unit,t-t'}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\forall t_{gas}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+p^{flow\_profile}_{gas\_demand,t}= & v^{flow}_{gas\_distribution,out,t}\\
+v^{flow}_{gas\_import,t}= & v^{flow}_{gas\_distribution,in,t}+v^{flow}_{gas\_unit,in,t}\\
+v^{flow}_{gas\_distribution,out,t}= & p^{efficiency}_{gas\_distribution}\cdot v^{flow}_{gas\_distribution,in,t}\\
+\\v^{flow}_{gas\_unit,in,t} & \leq\frac{1}{p^{efficiency}_{gas\_unit}}\cdot p^{capacity}_{gas\_unit}\cdot v^{investment}_{gas\_unit}\\
+\sum_{t\in[t_{gas}:t_{gas}+\Delta_{t_{gas}}]}v^{flow}_{gas\_unit,out,t}\cdot1h= & p^{efficiency}_{gas\_unit}\cdot v^{flow}_{gas\_unit,in,t_{gas}}\cdot\Delta_{t_{gas}}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+the initial number of units on does not seem to work in spineopt
+\begin_inset Formula $v^{on}_{nuclear\_unit,1}=v^{on\_up}_{nuclear\_unit,1}-v^{on\_down}_{nuclear\_unit,1}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+bound to:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+p^{existing\_units}_{gas\_unit}\leq & v^{investment}_{gas\_unit} & \leq p^{max\_cumulative}_{gas\_unit}\\
+p^{existing\_units}_{solar\_unit}\leq & v^{investment}_{solar\_unit} & \leq p^{max\_cumulative}_{solar\_unit}\\
+p^{existing\_units}_{wind\_unit}\leq & v^{investment}_{wind\_unit} & \leq p^{max\_cumulative}_{wind\_unit}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\forall t$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+0\leq & v^{slack}_{electricity\_demand,t}\\
+0\leq & v^{flow,reserve}_{gas\_unit,t}\\
+0\leq & v^{flow,reserve}_{nuclear\_unit,t} & \leq p^{max\_reserve}_{nuclear\_unit}\cdot p^{existing\_units}_{nuclear\_unit}\\
+\\0\leq & v^{flow}_{electricity\_distribution,out,t} & \leq p^{capacity}_{electricity\_distribution}\cdot p^{existing\_units}_{electricity\_distribution}\\
+0\leq & v^{flow}_{electricity\_transport,out,t} & \leq p^{capacity}_{electricity\_transport}\cdot p^{existing\_units}_{electricity\_transport}\\
+\\0\leq & v^{flow}_{electricity\_import,t} & \leq p^{capacity}_{electricity\_import}\cdot p^{existing\_units}_{electricity\_import}\\
+\\0\leq & v^{flow}_{nuclear\_unit,t} & \le p^{capacity}_{nuclear\_unit}\cdot p^{existing\_units}_{nuclear\_unit}\\
+0\leq & v^{on}_{nuclear\_unit,t} & \leq1\\
+0\leq & v^{on\_up}_{nuclear\_unit,t} & \leq1\\
+0\leq & v^{on\_down}_{nuclear\_unit,t} & \leq1\\
+\\0\leq & v^{flow}_{gas\_unit,out,t}\\
+\\0\leq & v^{flow}_{solar\_unit,t}\\
+0\leq & v^{flow}_{wind\_unit,t}\\
+\\0\leq & v^{charge}_{battery,t} & \leq p^{capacity\_charge}_{battery}\cdot p^{existing\_units}_{battery}\\
+0\leq & v^{discharge}_{battery,t} & \leq p^{capacity\_discharge}_{storage}\cdot p^{existing\_units}_{battery}\\
+0\leq & v^{state}_{battery,t} & \leq p^{capacity}_{storage}\cdot p^{existing\_units}_{battery}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\forall t_{gas}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+0\leq & v^{flow}_{gas\_distribution,out,t} & \leq p^{capacity}_{gas\_distribution}\cdot p^{existing\_units}_{gas\_distribution}\\
+0\leq & v^{flow}_{gas\_import,t} & \leq p^{capacity}_{gas\_import}\cdot p^{existing\_units}_{gas\_import}\\
+0\leq & v^{flow}_{gas\_unit,in,t}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chapter
+\start_of_appendix
+Ines-spec
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "chap:Ines-spec"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Below are the symbols used in the ines-spec.
+ For a full explanation of each entity,
+ we refer to the ines-spec repository.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename fig/ines-spec-symbols.png
+	height 25pheight%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Symbols used in the ines-spec.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chapter
+Installation and use of the certification process
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "chap:Installation-and-use"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Installation:
+\end_layout
+
+\begin_layout Enumerate
+Install Python
+\end_layout
+
+\begin_layout Enumerate
+Spine Toolbox
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+create a python environment in a desired location,
+ e.g.
+ ~/spinetools/environments,
+ assuming you opened the terminal in the spinetools folder:
+ `python -m venv environments/penv`
+\end_layout
+
+\begin_layout Enumerate
+activate the python environment:
+ `source environments/penv/bin/activate` (linux) `call environments/penv/Scripts/activate` (windows)
+\end_layout
+
+\begin_layout Enumerate
+install with `pip install spinetoolbox`
+\end_layout
+
+\begin_layout Enumerate
+open spinetoolbox and set the correct environments in the settings for the tools and install plugings if necessary
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+ines tools
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+clone the github repository:
+ `git clone https://github.com/ines-tools/ines-tools.git`
+\end_layout
+
+\begin_layout Enumerate
+activate the python environment (not necessary if the environment is still active)
+\end_layout
+
+\begin_layout Enumerate
+install with `pip install ines-tools/.`
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+The conversion script between ines and the energy system planning model,
+ e.g.
+ SpineOpt
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+clone the github repository:
+ `git clone https://github.com/ines-tools/ines-spineopt.git`
+\end_layout
+
+\begin_layout Enumerate
+navigate to the folder:
+ `cd ines-spineopt`
+\end_layout
+
+\begin_layout Enumerate
+switch to the correct branch (as the time of writing that is the new_datastructure branch):
+ `git checkout new_datastructure`
+\end_layout
+
+\begin_layout Enumerate
+go back to the spinetools folder:
+ `cd ..`
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+The ines-spec
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+clone the github repository:
+ `git clone https://github.com/ines-tools/ines-spec.git`
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+The energy system planning model,
+ e.g.
+ SpineOpt
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+At the time of writing,
+ we need the developer version of SpineOpt to access a specific branch that is compatible with the conversion script.
+ The same holds for SpineInterface.
+ For each of these projects we need to clone the repository,
+ navigate to the folder,
+ select the correct branch,
+ return to the overall folder and eventually create a julia environment
+\end_layout
+
+\begin_layout Enumerate
+`git clone https://github.com/spine-tools/SpineOpt.jl.git`
+\end_layout
+
+\begin_layout Enumerate
+`cd SpineOpt.jl`
+\end_layout
+
+\begin_layout Enumerate
+`git checkout datastructure_update`
+\end_layout
+
+\begin_layout Enumerate
+`cd ..`
+\end_layout
+
+\begin_layout Enumerate
+`git clone https://github.com/spine-tools/SpineInterface.jl.git`
+\end_layout
+
+\begin_layout Enumerate
+`cd SpineInterface.jl`
+\end_layout
+
+\begin_layout Enumerate
+`git checkout #139_attempt4`
+\end_layout
+
+\begin_layout Enumerate
+`cd ..`
+\end_layout
+
+\begin_layout Enumerate
+install Julia with juliaup
+\end_layout
+
+\begin_layout Enumerate
+Then we need to open the julia repl to create the environment and add the packages.
+ The terminal is openened with the `julia` command,
+ the package manager is accessed by typing `]` in the julia terminal.
+\end_layout
+
+\begin_layout Enumerate
+Create and activate the environment with `activate environments/jenv`
+\end_layout
+
+\begin_layout Enumerate
+add the developer packages,
+ starting with SpineInterface `dev SpineInterface.jl/.` and `dev SpineOpt.jl/.`
+\end_layout
+
+\begin_layout Enumerate
+Go back to the julia repl by pressing backspace and exit julia by typing `exit()`
+\end_layout
+
+\begin_layout Enumerate
+in spinetoolbox add the spineopt plugin and set the julia environment in files>settings>tools>julia to the created julia environment
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Getting started:
+\end_layout
+
+\begin_layout Enumerate
+Create a new project in Spine Toolbox,
+ e.g.
+ 'ines-certify'.
+\end_layout
+
+\begin_layout Enumerate
+Add the necessary building blocks (data stores and tools) and connect them accordingly,
+ see for example Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:certification_workflow"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+tuple "list"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+For the datastore objects
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+create a new spine db from the data store properties window
+\end_layout
+
+\begin_layout Enumerate
+load the template for the ines-spec and the energy system planning model
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+for the certification setup in the ines-spec,
+ the template is directly available in the setup itself,
+ open the spine db editor and import the desired certification setup from the ines-spec repository (in the ines-certify folder)
+\end_layout
+
+\begin_layout Enumerate
+for the SpineOpt model,
+ use the load_template tool to load the template in the input spine db for the SpineOpt model
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Enumerate
+For the tools
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+add the relevant databases to the tool arguments in the tool properties window
+\end_layout
+
+\begin_layout Enumerate
+for the conversion script open the tool editor
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+add the main file from the ines-spineopt repository
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+ines_to_spineopt.py
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+add all the other files as additional files
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+ines_to_spineopt_entities.yaml
+\end_layout
+
+\begin_layout Enumerate
+ines_to_spineopt_entities_to_parameters.yaml
+\end_layout
+
+\begin_layout Enumerate
+ines_to_spineopt_methods.yaml
+\end_layout
+
+\begin_layout Enumerate
+ines_to_spineopt_parameters.yaml
+\end_layout
+
+\begin_layout Enumerate
+settings.yaml
+\end_layout
+
+\end_deeper
+\end_deeper
+\end_deeper
+\begin_layout Enumerate
+run the project
+\end_layout
+
+\begin_layout Enumerate
+Compare the results of the energy system planning model to those of the exact solution in the ines-spec repository (you can run the exact solution in the same julia environment of SpineOpt after you've explicitly added the JuMP package to that environment)
+\end_layout
+
+\begin_layout Chapter
+Extended Certification process
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "chap:Extended-Certification-process"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The certification setups from Chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:Certification-process"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+tuple "list"
+
+\end_inset
+
+ are selected for a proof of concept.
+ The full certification process consists of:
+\end_layout
+
+\begin_layout Description
+equation
+\begin_inset space ~
+\end_inset
+
+tests are a systematic group of tests to test each equation of energy system models individually,
+ starting from a simple energy balance on one node with 1 demand unit and on supply unit
+\end_layout
+
+\begin_layout Description
+method
+\begin_inset space ~
+\end_inset
+
+tests are tests that cover multiple equations to show off a certain feature (various examples can be found in Chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:Certification-process"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+tuple "list"
+
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Description
+system
+\begin_inset space ~
+\end_inset
+
+tests are more comprehensible,
+ similar to IEEE networks (an example can be found in the final setup of Chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:Certification-process"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+tuple "list"
+
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Standard
+For the equation tests,
+ inspiration can be taken from the different formulation in the proof of concept of the certification process.
+ For the method tests,
+ the table below is an indicative expansion of the certification process.
+ The system tests are a point of discussion for the consortium of the ines-spec.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="32" columns="2">
+<features borderColor="default" oddRowsColor="default" evenRowsColor="default" islongtable="true" longtabularalignment="center">
+<column alignment="center" valignment="top" varwidth="true" color="default">
+<column alignment="center" valignment="top" varwidth="true" color="default">
+<row color="default">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+name
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+description
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+network = copper plate
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Energy balance where the demand equals the supply for a single time step.
+ Two units where one is cheaper than the other.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+network = radial
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Two supply units,
+ each connected with a directional line to the demand.
+ The cheaper unit has the direction from the demand to the supply so the setup has no choice but to choose the more expensive unit.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Should in principle also cover multiple energy carriers as the radial network is directional which can be used for energy conversion
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(*) network = meshed
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Energy balance where the demand equals the supply for a single time step.
+ Triangular network with the two supply units and demand unit.
+ The cheapest unit should be chosen.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(*) resolution = fixed
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Same setup but with a time series for all units with the same resolution.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+resolution = variable
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Same setup but the time series has a variable resolution.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(*) resolution = flexible
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Same setup but the two units have different resolutions (1h for expensive unit and 2h for cheap unit).
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(*) stochastic
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Meshed network,
+ fixed resolution,
+ expensive and cheap unit.
+ The units have the same stochastics.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+stochastic = flexible
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Same setup but the units have different stochastics.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+CO2 cap
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Meshed network,
+ fixed resolution,
+ expensive and cheap unit.
+ The cheap unit produces CO2 and is limited by the cap.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(*) reserves
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Meshed network,
+ fixed resolution,
+ expensive and cheap unit.
+ The expensive unit is able to provide reserves but not enough to entirely avoid load shedding.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+cogeneration
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Meshed network,
+ fixed resolution,
+ two supply units and two demand units but one one supply is cogeneration and one demand is for heat.
+ The setup is heat driven as only the electricity grid has two supply units.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Could have a separate test where the cogeneration is able to bleed.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+ramping
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Meshed network,
+ fixed resolution,
+ expensive and cheap unit.
+ The cheap unit is not able to ramp.
+ The demand profile is either an elevated sine or piecewise linear 
+\backslash
+_/.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+flow = fixed
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Meshed network,
+ fixed resolution,
+ expensive and cheap unit.
+ The expensive unit is forced to produce a certain flow.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+flow = limited
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Meshed network,
+ fixed resolution,
+ expensive and cheap unit.
+ The expensive unit is forced to produce within certain limits.
+ This test also represents curtailment.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(**) storage = intra
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Meshed network,
+ fixed resolution,
+ one storage unit and one supply unit.
+ The supply unit has a fixed output that does not correspond to the demand.
+ The storage has to be used to be feasible.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+storage = inter
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Same setup but there are multiple periods.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+part-load efficiency
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+linear and integer?
+ Ines has a lot of different methods for efficiency.
+ Do they all need tests?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Meshed network,
+ fixed resolution,
+ expensive and cheap unit.
+ The partload efficiency of the cheap unit makes it that the overall cost is higher than the expensive unit.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(**) MUT
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Meshed network,
+ fixed resolution,
+ expensive storage and cheap unit.
+ By setting the minimum production equal to the maximal production the output of the unit becomes fixed.
+ By setting the minimum uptime (
+\begin_inset Formula $MUT$
+\end_inset
+
+) equal to the lifetime of the unit,
+ whenever the unit delivers an output,
+ that output will need to be maintained for the remainder of the simulation.
+ That means that there will appear horizontal lines for each level of required output.
+ To make sure that the system works,
+ a storage unit is used to get rid of the excess power.
+ The storage unit is very expensive such that it would be avoided if it would not be needed.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(**) MDT
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Same setup,
+ but there is a moment where the demand is zero.
+ Normally,
+ the plant would shut down,
+ but due to the MDT it needs to remain on.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+economic representation
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Meshed network,
+ fixed resolution,
+ expensive and cheap unit.
+ The numbers will be different from other setups due to the economic representation.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(*) investment = fixed
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Meshed network,
+ fixed resolution,
+ expensive and cheap unit.
+ Expensive unit is already invested in.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+investment = cumulative
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Same setup but a cumulative cap
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+investment = multi year
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Same setup but multiple periods.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+retirement = fixed
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Same setup Expensive unit is already invested in but is sunset in the second period.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+retirement = economic
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Same setup but the retirement is not fixed.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+representative periods
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Meshed network,
+ fixed resolution,
+ expensive and cheap unit,
+ renewable unit and intra period storage.
+ A few representative days are chosen.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+blended representative periods
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Same setup but with blended representative periods and inter period storage.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(*) rolling horizon
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Same setup but the periods are separated.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+benders decomposition
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Same setup but the investment and operation are separated from each other.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row color="default">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+mini Europe
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+A miniature version of europe with very limited temporal aspects (a day = 6 hours,
+ a season is 1 day).
+ Each country has a demand but only its most prominent technologies.
+ Complex setup with storage,
+ cogeneration,
+ CO2 cap,
+ ramping,
+ flow limits,
+ part-load efficiency,
+ MUT/MDT.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row endfirsthead="true" caption="true" color="default">
+<cell multicolumn="1" alignment="center" valignment="top" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:expansion-certification-process"
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Expansion of the certification process.
+ (*) indicate setups that are already explicitly covered in the proof of concept.
+ (**) indicate setups that are already implicitly covered in the proof of concept.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Section
+stochastic = flexible
+\end_layout
+
+\begin_layout Plain Layout
+The goal of this setup is to test scenarios in the formulation.
+ To that end the setup starts from resolution = fixed and adds stochastics for the demand and the commodity prices.
+ The demand can be high and low and the commodity prices can be expensive or cheap.
+ While defined in different parts of the model,
+ the formulation needs to combine these scenarios properly such that all flows are adjusted accordingly.
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+SpineOpt has some other stochastic options like the DAG but that is rather specific.
+ Independent and unit-specific stochastics is already good enough
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename fig/stochastic__flexible.png
+	width 75text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+stochastic = flexible
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Formulation to obtain the exact solution for this setup:
+\end_layout
+
+\begin_layout Plain Layout
+minimise:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align*}
+z= & \sum_{t}\sum_{s}p^{other\_operational\_costs}_{cheap\_source,t,s}\cdot p^{weight}_{cheap\_source,s}\cdot v^{flow}_{cheap\_source,t,s}+p^{other\_operational\_costs}_{expensive\_source,t,s}\cdot v^{flow}_{expensive\_source,t,s}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+subject to:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align*}
+p^{flow\_profile}_{demand,t,s}= & v^{flow}_{cheap\_link,out,t,s}+v^{flow}_{expensive\_link,out,t,s}\\
+v^{flow}_{cheap\_link,out,t,s}= & p^{efficiency}_{cheap\_link}\cdot v^{flow}_{cheap\_link,in,t,s}\\
+v^{flow}_{expensive\_link,out,t,s}= & p^{efficiency}_{expensive\_link}\cdot v^{flow}_{expensive\_link,in,t,s}\\
+v^{flow}_{triangle,out,t,s}= & p^{efficiency}_{triangle}\cdot v^{flow}_{triangle,in,t,s}\\
+v^{flow}_{cheap\_link,in,t,s}= & v^{flow}_{cheap\_supply,t,s}+v^{flow}_{triangle,out,t,s}\\
+v^{flow}_{expensive\_supply,t,s}= & v^{flow}_{expensive\_link,in,t,s}+v^{flow}_{triangle,in,t,s}\\
+v^{flow}_{expensive\_supply,t,s}= & p^{efficiency}_{expensive\_unit}\cdot v^{flow}_{expensive\_source,t,s}\\
+v^{flow}_{cheap\_supply,t,s}= & p^{efficiency}_{cheap\_unit}\cdot v^{flow}_{cheap\_source,t,s}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+bound to:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align*}
+0\leq & v^{flow}_{cheap\_link,in,t,s}\\
+0\leq & v^{flow}_{cheap\_link,out,t,s} & \leq p^{capacity}_{cheap\_link}\cdot p^{existing\_units}_{cheap\_link}\\
+0\leq & v^{flow}_{expensive\_link,in,t,s}\\
+0\leq & v^{flow}_{expensive\_link,out,t,s} & \leq p^{capacity}_{expensive\_link}\cdot p^{existing\_units}_{expensive\_link}\\
+0\leq & v^{flow}_{triangle,in,t,s}\\
+0\leq & v^{flow}_{triangle,out,t,s} & \leq p^{capacity}_{triangle}\cdot p^{existing\_units}_{triangle}\\
+0\leq & v^{flow}_{expensive\_supply,t,s} & \leq p^{capacity}_{expensive\_unit}\cdot p^{existing\_units}_{expensive\_unit}\\
+0\leq & v^{flow}_{expensive\_source,t,s}\\
+0\leq & v^{flow}_{cheap\_supply,t,s} & \leq p^{capacity}_{cheap\_unit}\cdot p^{existing\_units}_{cheap\_unit}\\
+0\leq & v^{flow}_{cheap\_source,t,s}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+delta formulation with blended representative periods
+\end_layout
+
+\begin_layout Plain Layout
+The goal of this setup is to test an advanced storage formulation using blended representative periods and a delta formulation.
+ To that end the resolution = fixed setup is adjusted for 2 representative days (r) that are used to recreate 3 days (d) in a blended way.
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align*}
+d_{1}= & r_{1}\\
+d_{2}= & \frac{1}{2}(r_{1}+r_{3})\\
+d_{3}= & r_{3}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Storage has also been added to the setup and needs to have a state for intra days and inter days.
+ The delta formulation consists of the addition of inter constraints where the delta of the intra day is added every day in the inter day.
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align*}
+d_{1}= & d_{0}+r_{1,24}-r_{1,0}\\
+d_{2}= & d_{1}+\frac{1}{2}(r_{1,24}-r_{1,0}+r_{3,24}-r_{3,0})\\
+d_{3}= & d_{2}+r_{3,24}-r_{3,0}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Formulation to obtain the exact solution for this setup:
+\end_layout
+
+\begin_layout Plain Layout
+minimise:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align*}
+z= & \sum_{r}W_{r}\sum_{t}p^{other\_operational\_costs}_{cheap\_source,r,t}\cdot v^{flow}_{cheap\_source,r,t}+p^{other\_operational\_costs}_{expensive\_source,r,t}\cdot v^{flow}_{expensive\_source,r,t}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+subject to:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align*}
+p^{flow\_profile}_{demand,r,t}= & v^{flow}_{cheap\_link,out,r,t}+v^{flow}_{expensive\_link,out,r,t}-v^{charge}_{storage,r,t}+p^{efficiency,discharge}_{storage}\cdot v^{discharge}_{storage,r,t}\\
+\\v^{flow}_{cheap\_link,out,r,t}= & p^{efficiency}_{cheap\_link}\cdot v^{flow}_{cheap\_link,in,r,t}\\
+v^{flow}_{expensive\_link,out,r,t}= & p^{efficiency}_{expensive\_link}\cdot v^{flow}_{expensive\_link,in,r,t}\\
+v^{flow}_{triangle,out,r,t}= & p^{efficiency}_{triangle}\cdot v^{flow}_{triangle,in,r,t}\\
+\\v^{flow}_{cheap\_link,in,r,t}= & v^{flow}_{cheap\_supply,r,t}+v^{flow}_{triangle,out,r,t}\\
+v^{flow}_{expensive\_supply,r,t}= & v^{flow}_{expensive\_link,in,r,t}+v^{flow}_{triangle,in,r,t}\\
+\\v^{flow}_{expensive\_supply,r,t}= & p^{efficiency}_{expensive\_unit}\cdot v^{flow}_{expensive\_source,r,t}\\
+v^{flow}_{cheap\_supply,r,t}= & p^{efficiency}_{cheap\_unit}\cdot v^{flow}_{cheap\_source,r,t}\\
+\\v^{state,intra}_{storage,r,t}= & p^{efficiency}_{storage}\cdot v^{state,intra}_{storage,r,t-1}+p^{efficiency,charge}_{storage}\cdot v^{charge}_{storage,r,t}-v^{discharge}_{storage,r,t}\\
+v^{state,inter}_{storage,d}= & v^{state,inter}_{storage,d-1}+\sum_{r}W_{d,r}\cdot(v^{state,intra}_{storage,r,0}-v^{state,intra}_{storage,r,T})\\
+v^{state,inter}_{storage,0}= & v^{state,inter}_{storage,D}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Currently,
+ the initial state of the storage is unbound in every representative day.
+ In theory that can be abused by the model,
+ but it is controlled by the inter state which needs to be in balance over the year.
+\end_layout
+
+\begin_layout Plain Layout
+There are other ways to initialise,
+ for example to have a cyclic condition within a day as well:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align*}
+v^{state,intra}_{storage,r,0}= & v^{state,intra}_{storage,r,T}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+bound to:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align*}
+0\leq & v^{flow}_{cheap\_link,out,r,t} & \leq p^{capacity}_{cheap\_link}\cdot p^{existing\_units}_{cheap\_link}\\
+0\leq & v^{flow}_{expensive\_link,out,r,t} & \leq p^{capacity}_{expensive\_link}\cdot p^{existing\_units}_{expensive\_link}\\
+0\leq & v^{flow}_{triangle,out,r,t} & \leq p^{capacity}_{triangle}\cdot p^{existing\_units}_{triangle}\\
+\\0\leq & v^{flow}_{expensive\_supply,r,t} & \leq p^{capacity}_{expensive\_unit}\cdot p^{existing\_units}_{expensive\_unit}\\
+0\leq & v^{flow}_{cheap\_supply,r,t} & \leq p^{capacity}_{cheap\_unit}\cdot p^{existing\_units}_{cheap\_unit}\\
+\\0\leq & v^{charge}_{storage,r,t} & \leq p^{capacity\_charge}_{storage}\cdot p^{existing\_units}_{storage}\\
+0\leq & v^{discharge}_{storage,r,t} & \leq p^{capacity\_discharge}_{storage}\cdot p^{existing\_units}_{storage}\\
+0\leq & v^{state,intra}_{storage,r,t} & \leq p^{capacity}_{storage}\cdot p^{existing\_units}_{storage}\\
+0\leq & v^{state,inter}_{storage,d} & \leq p^{capacity}_{storage}\cdot p^{existing\_units}_{storage}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+reserves with line restrictions
+\end_layout
+
+\begin_layout Plain Layout
+The goal of this setup is to test the reserve requirements.
+ To that end the setup starts from resolution = fixed and adds a reserve requirement to the demand.
+ The lines need to be able to process the reserves and the supply units need to be able to provide reserves.
+ For the proof of concept,
+ we limit ourselves to upward reserves.
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename fig/reserves_with_lines.png
+	width 75text%
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Setup in ines may not be entirely correct
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+reserves
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Formulation to obtain the exact solution for this setup:
+\end_layout
+
+\begin_layout Plain Layout
+minimise:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align*}
+z= & \sum_{t}p^{other\_operational\_costs}_{cheap\_source,t}\cdot v^{flow}_{cheap\_source,t}+p^{other\_operational\_costs}_{expensive\_source,t}\cdot v^{flow}_{expensive\_source,t}+p^{penalty}_{demand}\cdot v^{slack}_{demand,t}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+subject to:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align*}
+p^{reserve}_{demand,t}=< & v^{flow,reserve}_{cheap\_link,out,t}+v^{flow,reserve}_{expensive\_link,out,t}+v^{slack}_{demand,t}\\
+\\p^{flow\_profile}_{demand,t}= & v^{flow}_{cheap\_link,out,t}+v^{flow}_{expensive\_link,out,t}\\
+\\v^{flow}_{cheap\_link,out,t}= & p^{efficiency}_{cheap\_link}\cdot v^{flow}_{cheap\_link,in,t}\\
+v^{flow}_{expensive\_link,out,t}= & p^{efficiency}_{expensive\_link}\cdot v^{flow}_{expensive\_link,in,t}\\
+v^{flow}_{triangle,out,t}= & p^{efficiency}_{triangle}\cdot v^{flow}_{triangle,in,t}\\
+\\v^{flow,reserve}_{cheap\_link,out,t}= & p^{efficiency}_{cheap\_link}\cdot v^{flow,reserve}_{cheap\_link,in,t}\\
+v^{flow,reserve}_{expensive\_link,out,t}= & p^{efficiency}_{expensive\_link}\cdot v^{flow,reserve}_{expensive\_link,in,t}\\
+\\v^{flow}_{cheap\_link,out,t}+v^{flow,reserve}_{cheap\_link,out,t} & \leq p^{capacity}_{cheap\_link}\cdot p^{existing\_links}_{cheap\_link}\\
+v^{flow}_{expensive\_link,out,t}+v^{flow,reserve}_{expensive\_link,out,t} & \leq p^{capacity}_{expensive\_link}\cdot p^{existing\_links}_{expensive\_link}\\
+\\v^{flow}_{cheap\_link,in,t}= & v^{flow}_{cheap\_supply,t}+v^{flow}_{triangle,out,t}\\
+v^{flow}_{expensive\_supply,t}= & v^{flow}_{expensive\_link,in,t}+v^{flow}_{triangle,in,t}\\
+\\v^{flow,reserve}_{cheap\_supply,t}= & v^{flow,reserve}_{cheap\_link,in,t}\\
+v^{flow,reserve}_{expensive\_supply,t}= & v^{flow,reserve}_{expensive\_link,in,t}\\
+\\v^{flow}_{expensive\_supply,t}= & p^{efficiency}_{expensive\_unit}\cdot v^{flow}_{expensive\_source,t}\\
+v^{flow}_{cheap\_supply,t}= & p^{efficiency}_{cheap\_unit}\cdot v^{flow}_{cheap\_source,t}\\
+\\v^{flow}_{expensive\_supply,t}+v^{flow,reserve}_{expensive\_supply,t} & \leq p^{capacity}_{expensive\_unit}\cdot p^{existing\_units}_{expensive\_unit}\\
+v^{flow}_{cheap\_supply,t}+v^{flow,reserve}_{expensive\_supply,t} & \leq p^{capacity}_{cheap\_unit}\cdot p^{existing\_units}_{cheap\_unit}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+The equation should be:
+\begin_inset Formula 
+\begin{align*}
+v^{flow,reserve}_{cheap\_supply,t}=< & v^{flow,reserve}_{cheap\_link,in,t}\\
+v^{flow,reserve}_{expensive\_supply,t}=< & v^{flow,reserve}_{expensive\_link,in,t}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+But then the units don't provide the necessary reserves.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+bound to:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align*}
+0\leq & v^{slack}_{demand,t}\\
+0\leq & v^{flow,reserve}_{cheap\_link,out,t} & \leq p^{max\_reserve}_{cheap\_link}\cdot p^{existing\_links}_{cheap\_link}\\
+0\leq & v^{flow,reserve}_{expensive\_link,out,t} & \leq p^{max\_reserve}_{expensive\_link}\cdot p^{existing\_links}_{expensive\_link}\\
+0\leq & v^{flow,reserve}_{cheap\_supply,t} & \leq p^{max\_reserve}_{cheap\_unit}\cdot p^{existing\_units}_{cheap\_unit}\\
+0\leq & v^{flow,reserve}_{expensive\_supply,t} & \leq p^{max\_reserve}_{expensive\_unit}\cdot p^{existing\_units}_{expensive\_unit}\\
+\\0\leq & v^{flow}_{cheap\_link,out,t} & \leq p^{capacity}_{cheap\_link}\cdot p^{existing\_links}_{cheap\_link}\\
+0\leq & v^{flow}_{expensive\_link,out,t} & \leq p^{capacity}_{expensive\_link}\cdot p^{existing\_links}_{expensive\_link}\\
+0\leq & v^{flow}_{triangle,out,t} & \leq p^{capacity}_{triangle}\cdot p^{existing\_units}_{triangle}\\
+\\0\leq & v^{flow}_{expensive\_supply,t} & \leq p^{capacity}_{expensive\_unit}\cdot p^{existing\_units}_{expensive\_unit}\\
+0\leq & v^{flow}_{cheap\_supply,t} & \leq p^{capacity}_{cheap\_unit}\cdot p^{existing\_units}_{cheap\_unit}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+combination of the above
+\end_layout
+
+\begin_layout Plain Layout
+The goal of this setup is to test systems that combine some of the different features.
+ This setup is a combination of all the previous setups.
+ It is sector coupled for the flexible time steps.
+ The gas sector consists of import,
+ demand and gas provision to a gas plant.
+ The electricity sector consists of the gas plant,
+ a nuclear plant,
+ batteries,
+ onshore PV,
+ offshore wind,
+ electricity import and demand.
+ The demand is in the distribution grid,
+ the import and offshore wind is in a separate node.
+ There are stochastics for the renewables and import prices.
+ There is a rolling horizon as well.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+There is a rolling horizon where the resource prices are switched again.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename fig/combination_of_setups.png
+	width 75text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+combined system
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Formulation to obtain the exact solution for this setup:
+\end_layout
+
+\begin_layout Plain Layout
+minimise:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align*}
+z= & \sum_{r}W_{r}\sum_{s}W_{s}\sum_{t\in t_{gas}}p^{other\_operational\_costs}_{gas\_import,r,s,t}\cdot v^{flow}_{gas\_import,r,s,t}\cdot\Delta_{t_{gas}}+\sum_{t}p^{other\_operational\_costs}_{electricity\_import,r,s,t}\cdot v^{flow}_{electricity\_import,r,s,t}\\
+ & +\sum_{r}W_{r}\sum_{s}W_{s}\sum_{t}p^{startup\_cost}_{nuclear\_unit}\cdot v^{on\_up.}_{nuclear\_unit,r,s,t}+p^{other\_operational\_costs}_{nuclear\_unit}\cdot v^{flow}_{nuclear\_unit,r,s,t}\\
+ & +p^{penalty}_{demand}\cdot v^{slack}_{demand,r,s,t}+p^{procurement\_cost}_{nuclear\_unit,t}\cdot v^{flow,reserve}_{nuclear\_unit,r,s,t}+p^{procurement\_cost}_{gas\_unit,t}\cdot v^{flow,reserve}_{gas\_unit,r,s,t}\\
+ & +p^{investment\_cost}_{gas\_unit}\cdot(v^{investment}_{gas\_unit}-p^{existing\_units}_{gas\_unit})+p^{investment\_cost}_{battery}\cdot(v^{investment}_{battery}-p^{existing\_units}_{battery})\\
+ & +p^{investment\_cost}_{wind\_unit}\cdot(v^{investment}_{wind\_unit}-p^{existing\_units}_{wind\_unit})+p^{investment\_cost}_{solar\_unit}\cdot(v^{investment}_{solar\_unit}-p^{existing\_units}_{solar\_unit})
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+subject to:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align*}
+p^{flow\_profile}_{electricity\_demand,r,t}= & v^{flow}_{electricity\_distribution,out,r,s,t}+v^{flow}_{solar\_unit,r,s,t}\\
+p^{flow\_profile}_{gas\_demand,r,t}= & v^{flow}_{gas\_distribution,out,r,s,t}\\
+v^{flow}_{gas\_import,r,s,t}= & v^{flow}_{gas\_distribution,in,r,s,t}+v^{flow}_{gas\_unit,in,r,s,t}\\
+v^{flow}_{electricity\_distribution,in,r,s,t}= & v^{flow}_{electricity\_transport,out,r,s,t}+v^{flow}_{nuclear\_unit,r,s,t}+v^{flow}_{gas\_unit,out,r,s,t}\\
+ & -v^{charge}_{battery,r,s,t}+p^{efficiency,discharge}_{battery}\cdot v^{discharge}_{battery,r,s,t}\\
+v^{flow}_{electricity\_transport,in,r,s,t}= & v^{flow}_{wind\_unit,r,s,t}+v^{flow}_{electricity\_import,out,r,s,t}\\
+\\v^{flow}_{gas\_distribution,out,r,s,t}= & p^{efficiency}_{gas\_distribution}\cdot v^{flow}_{gas\_distribution,in,r,s,t}\\
+v^{flow}_{electricity\_distribution,out,r,s,t}= & p^{efficiency}_{electricity\_distribution}\cdot v^{flow}_{electricity\_distribution,in,t}\\
+v^{flow}_{electricity\_transport,out,r,s,t}= & p^{efficiency}_{electricity\_transport}\cdot v^{flow}_{electricity\_transport,in,r,s,t}\\
+\\\sum_{t\in t_{gas}}v^{flow}_{gas\_unit,out,r,s,t}\cdot1h= & p^{efficiency}_{gas\_unit}\cdot v^{flow}_{gas\_unit,in,r,s,t_{gas}}\cdot\Delta_{t_{gas}}\\
+\\v^{on}_{nuclear\_unit,r,s,t}= & v^{on}_{nuclear\_unit,r,s,t-1}+v^{on\_up}_{nuclear\_unit,r,s,t}-v^{on\_down}_{nuclear\_unit,r,s,t}\\
+v^{on\_up}_{nuclear\_unit,r,s,t}\leq & 1-v^{on}_{nuclear\_unit,r,s,t}-\sum^{MDT-1}_{t'=1}v^{on\_down}_{nuclear\_unit,r,s,t-t'}\\
+v^{on\_down}_{nuclear\_unit,r,s,t}\leq & v^{on}_{nuclear\_unit,r,s,t}-\sum^{MUT-1}_{t'=1}v^{on\_up}_{nuclear\_unit,r,s,t-t'}\\
+\\v^{state,intra}_{battery,r,s,t}= & p^{efficiency}_{battery}\cdot v^{state,intra}_{battery,r,s,t-1}+p^{efficiency,charge}_{battery}\cdot v^{charge}_{battery,r,s,t}-v^{discharge}_{battery,r,s,t}\\
+v^{state,inter}_{battery,s,d}= & v^{state,inter}_{battery,s,d-1}+\sum_{r}W_{r,d}\cdot(v^{state,intra}_{battery,r,s,0}-v^{state,intra}_{battery,r,s,T})\\
+v^{state,inter}_{storage,s,0}= & v^{state,inter}_{storage,s,D}\\
+\\p^{reserve}_{electricity\_demand,r,t}=< & v^{flow,reserve}_{gas\_unit,r,s,t}+v^{flow,reserve}_{nuclear\_unit,r,s,t}+v^{slack}_{electricity\_demand,r,s,t}\\
+\\v^{flow}_{gas\_unit,out,r,s,t}+v^{flow,reserve}_{gas\_unit,r,s,t} & \leq p^{capacity}_{gas\_unit}\cdot v^{investment}_{gas\_unit}\\
+v^{flow}_{nuclear\_unit,r,s,t}+v^{flow,reserve}_{nuclear\_unit,r,s,t} & \leq p^{capacity}_{nuclear\_unit}\cdot p^{existing\_units}_{nuclear\_unit}\cdot v^{on}_{nuclear\_unit,s,t}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+bound to:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align*}
+0\leq & v^{flow}_{gas\_distribution,out,r,s,t} & \leq p^{capacity}_{gas\_distribution}\cdot p^{existing\_units}_{gas\_distribution}\\
+0\leq & v^{flow}_{electricity\_distribution,out,r,s,t} & \leq p^{capacity}_{electricity\_distribution}\cdot p^{existing\_units}_{electricity\_distribution}\\
+0\leq & v^{flow}_{electricity\_transport,out,r,s,t} & \leq p^{capacity}_{electricity\_transport}\cdot p^{existing\_units}_{electricity\_transport}\\
+\\0\leq & v^{flow}_{gas\_import,r,s,t} & \leq p^{capacity}_{gas\_import}\cdot p^{existing\_units}_{gas\_import}\\
+0\leq & v^{flow}_{electricity\_import,r,s,t} & \leq p^{capacity}_{electricity\_import}\cdot p^{existing\_units}_{electricity\_import}\\
+\\ & v^{flow}_{nuclear\_unit,r,s,t} & \leq p^{capacity}_{nuclear\_unit}\cdot p^{existing\_units}_{nuclear\_unit}\cdot v^{on}_{nuclear\_unit,r,s,t}\\
+ & v^{flow}_{nuclear\_unit,r,s,t} & \geq p^{capacity\_min}_{nuclear\_unit}\cdot p^{existing\_units}_{nuclear\_unit}\cdot v^{on}_{nuclear\_unit,r,st}\\
+0\leq & v^{on}_{nuclear\_unit,r,s,t} & \leq1\\
+0\leq & v^{on\_up}_{nuclear\_unit,r,s,t} & \leq1\\
+0\leq & v^{on\_down}_{nuclear\_unit,r,s,t} & \leq1\\
+\\0\leq & v^{flow}_{gas\_unit,in,r,s,t} & \leq\frac{1}{p^{efficiency}_{gas\_unit}}\cdot p^{capacity}_{gas\_unit}\cdot v^{investment}_{gas\_unit}\\
+0\leq & v^{flow}_{gas\_unit,out,r,s,t} & \leq p^{capacity}_{gas\_unit}\cdot v^{investment}_{gas\_unit}\\
+\\0\leq & v^{flow}_{solar\_unit,r,s,t} & \leq p^{flow\_profile}_{solar\_unit,r,s,t}\cdot p^{capacity}_{solar\_unit}\cdot v^{investment}_{solar\_unit}\\
+0\leq & v^{flow}_{wind\_unit,r,s,t} & \leq p^{flow\_profile}_{wind\_unit,r,s,t}\cdot p^{capacity}_{wind\_unit}\cdot v^{investment}_{wind\_unit}\\
+\\0\leq & v^{charge}_{battery,r,s,t} & \leq p^{capacity\_charge}_{battery}\cdot v^{investment}_{battery}\\
+0\leq & v^{discharge}_{battery,r,s,t} & \leq p^{capacity\_discharge}_{storage}\cdot v^{investment}_{battery}\\
+0\leq & v^{state,intra}_{battery,r,s,t} & \leq p^{capacity}_{storage}\cdot v^{investment}_{battery}\\
+0\leq & v^{state,inter}_{battery,s,d} & \leq p^{capacity}_{storage}\cdot v^{investment}_{battery}\\
+\\p^{existing\_units}_{gas\_unit}\leq & v^{investment}_{gas\_unit}\\
+p^{existing\_units}_{solar\_unit}\leq & v^{investment}_{solar\_unit}\\
+p^{existing\_units}_{wind\_unit}\leq & v^{investment}_{wind\_unit}\\
+p^{existing\_units}_{battery}\leq & v^{investment}_{battery}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\end_body
+\end_document
